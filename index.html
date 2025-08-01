@@ -33,7 +33,7 @@
         arjs="sourceType: webcam; debugUIEnabled: true;"
     >
         <!-- Usando archivo .txt como solución temporal -->
-        <a-marker type="pattern" url="assets/codigo.patt">
+        <a-marker type="pattern" url="https://leonardoespina.github.io/ar/assets/codigo.patt">
             <a-image src="assets/plato.jpg" position="0 0 0" rotation="-90 0 0" scale="0.5 0.5 0.5"></a-image>
         </a-marker>
         
@@ -50,7 +50,7 @@
         async function checkAssets() {
             try {
                 status.textContent = "Verificando marcador...";
-                const pattResponse = await fetch('assets/codigo.txt');
+                const pattResponse = await fetch('https://leonardoespina.github.io/ar/assets/codigo.patt');
                 const pattContent = await pattResponse.text();
                 
                 if(!pattContent.includes('ARjsMarker')) {
@@ -85,5 +85,6 @@
     </script>
 </body>
 </html>
+
 
 

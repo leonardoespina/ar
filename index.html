@@ -1,60 +1,45 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <title>Prueba de Librerías AR.js con Verbose</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.0/aframe/build/aframe-ar.js"></script>
-
+  <head>
+    <title>AR.js con marcador personalizado</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.2.1/aframe/build/aframe-ar.js"></script>
     <style>
-      #status-message {
-        position: fixed;
-        bottom: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: rgba(0, 0, 0, 0.7);
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      #loading {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        top: 20px;
+        z-index: 10;
         color: white;
-        padding: 10px;
-        border-radius: 5px;
-        font-family: sans-serif;
-        z-index: 1000;
-        display: none; /* Oculto por defecto */
       }
     </style>
-</head>
-<body style="margin : 0px; overflow: hidden;">
-    <div id="status-message">
-        <p>Esperando la cámara...</p>
-    </div>
+  </head>
+  <body>
+    <div id="loading">Cargando cámara...</div>
 
-    <a-scene embedded arjs="debugUIEnabled: false; verbose: true;">
-        <a-marker preset="hiro">
-            <a-box position="0 0.5 0" material="color: red;"></a-box>
-        </a-marker>
-        <a-entity camera></a-entity>
+    <a-scene embedded arjs>
+      <a-assets>
+        <!-- Imagen a mostrar sobre el marcador -->
+        <img id="banner" src="assets/plato.jpg" />
+      </a-assets>
+
+      <!-- Usa el archivo .patt dentro de assets/ -->
+      <a-marker type="pattern" url="assets/codigo.patt">
+        <a-image
+          src="#banner"
+          position="0 0 0"
+          rotation="-90 0 0"
+          height="1"
+          width="1"
+        ></a-image>
+      </a-marker>
+
+      <a-entity camera></a-entity>
     </a-scene>
-
-    <script>
-      // Script para actualizar el mensaje de estado
-      document.addEventListener('DOMContentLoaded', function() {
-        var statusMessage = document.getElementById('status-message');
-        statusMessage.style.display = 'block';
-
-        // Escucha el evento de inicialización de AR.js
-        document.querySelector('a-scene').addEventListener('arjs-ready', function() {
-          statusMessage.querySelector('p').innerText = "AR.js listo. Apunta la cámara al marcador Hiro.";
-        });
-        
-        // Escucha si el marcador es detectado
-        document.querySelector('a-marker').addEventListener('markerFound', function() {
-          statusMessage.querySelector('p').innerText = "¡Marcador detectado!";
-        });
-
-        // Escucha si el marcador se pierde
-        document.querySelector('a-marker').addEventListener('markerLost', function() {
-          statusMessage.querySelector('p').innerText = "Marcador perdido. Sigue apuntando.";
-        });
-      });
-    </script>
-</body>
+  </body>
 </html>

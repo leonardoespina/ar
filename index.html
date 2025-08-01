@@ -1,42 +1,25 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AR.js con marcador personalizado</title>
+    <title>AR.js - Móvil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.2.1/aframe/build/aframe-ar.js"></script>
     <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-      }
-      #loading {
-        position: absolute;
-        width: 100%;
-        text-align: center;
-        top: 20px;
-        z-index: 10;
-        color: white;
-      }
+      body { margin: 0; overflow: hidden; }
+      #loading { position: absolute; width: 100%; text-align: center; top: 20px; z-index: 10; color: white; }
     </style>
   </head>
   <body>
     <div id="loading">Cargando cámara...</div>
 
-    <a-scene embedded arjs>
+    <a-scene embedded arjs="sourceType: webcam;">
       <a-assets>
-        <!-- Imagen a mostrar sobre el marcador -->
-        <img id="banner" src="assets/plato.jpg" />
+        <img id="banner" src="assets/banner.png">
       </a-assets>
 
-      <!-- Usa el archivo .patt dentro de assets/ -->
       <a-marker type="pattern" url="assets/codigo.patt">
-        <a-image
-          src="#banner"
-          position="0 0 0"
-          rotation="-90 0 0"
-          height="1"
-          width="1"
-        ></a-image>
+        <a-image src="#banner" position="0 0 0" rotation="-90 0 0" width="1" height="1"></a-image>
       </a-marker>
 
       <a-entity camera></a-entity>

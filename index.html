@@ -2,16 +2,59 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Prueba de Librerías AR.js - Cubo Hiro</title>
-    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <title>Prueba de Librerías AR.js con Verbose</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.0/aframe/build/aframe-ar.js"></script>
+
+    <style>
+      #status-message {
+        position: fixed;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-family: sans-serif;
+        z-index: 1000;
+        display: none; /* Oculto por defecto */
+      }
+    </style>
 </head>
 <body style="margin : 0px; overflow: hidden;">
-    <a-scene embedded arjs>
+    <div id="status-message">
+        <p>Esperando la cámara...</p>
+    </div>
+
+    <a-scene embedded arjs="debugUIEnabled: false; verbose: true;">
         <a-marker preset="hiro">
             <a-box position="0 0.5 0" material="color: red;"></a-box>
         </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
+
+    <script>
+      // Script para actualizar el mensaje de estado
+      document.addEventListener('DOMContentLoaded', function() {
+        var statusMessage = document.getElementById('status-message');
+        statusMessage.style.display = 'block';
+
+        // Escucha el evento de inicialización de AR.js
+        document.querySelector('a-scene').addEventListener('arjs-ready', function() {
+          statusMessage.querySelector('p').innerText = "AR.js listo. Apunta la cámara al marcador Hiro.";
+        });
+        
+        // Escucha si el marcador es detectado
+        document.querySelector('a-marker').addEventListener('markerFound', function() {
+          statusMessage.querySelector('p').innerText = "¡Marcador detectado!";
+        });
+
+        // Escucha si el marcador se pierde
+        document.querySelector('a-marker').addEventListener('markerLost', function() {
+          statusMessage.querySelector('p').innerText = "Marcador perdido. Sigue apuntando.";
+        });
+      });
+    </script>
 </body>
 </html>

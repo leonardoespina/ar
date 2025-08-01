@@ -1,90 +1,41 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>AR.js con GitHub Pages</title>
-    <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1.4.0/dist/aframe-master.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-    <style>
-        body { margin: 0; padding: 0; overflow: hidden; }
-        .arjs-loader {
-            height: 100%; width: 100%; position: absolute;
-            top: 0; left: 0; background-color: rgba(0,0,0,0.8);
-            z-index: 9999; display: flex; justify-content: center;
-            align-items: center; color: white; font-family: Arial;
-            text-align: center;
-        }
-        #error { color: #ff4444; margin-top: 20px; }
-    </style>
-</head>
-<body>
-    <div class="arjs-loader" id="loader">
-        <div>
-            <h3>Cargando Realidad Aumentada</h3>
-            <p id="status">Inicializando...</p>
-            <p id="error"></p>
-        </div>
-    </div>
+    <head>
+        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
+    </head>
 
-    <a-scene 
-        vr-mode-ui="enabled: false"
-        embedded 
-        arjs="sourceType: webcam; debugUIEnabled: true;"
-    >
-        <!-- Usando archivo .txt como solución temporal -->
-        <a-marker type="pattern" url="https://leonardoespina.github.io/ar/assets/codigo.patt">
-            <a-image src="assets/plato.jpg" position="0 0 0" rotation="-90 0 0" scale="0.5 0.5 0.5"></a-image>
-        </a-marker>
-        
-        <a-entity camera></a-entity>
-    </a-scene>
+    <body style="margin: 0; overflow: hidden;">
+        <a-scene
+            vr-mode-ui="enabled: false;"
+            loading-screen="enabled: false;"
+            arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+            id="scene"
+            embedded
+            gesture-detector
+        >
+            <a-marker
+                id="animated-marker"
+                type="pattern"
+                preset="custom"
+                url="assets/marker.patt"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+                id="markerA"
+            >
+                <a-image
+                    src="assets/asset.jpeg"
+                    scale="1 1 1"
+                    class="clickable"
+                    rotation="-90 0 0"
+                    gesture-handler
+                ></a-image>
+            </a-marker>
 
-    <script>
-        // Debug
-        const loader = document.getElementById('loader');
-        const status = document.getElementById('status');
-        const error = document.getElementById('error');
-        
-        // Verificar carga de assets
-        async function checkAssets() {
-            try {
-                status.textContent = "Verificando marcador...";
-                const pattResponse = await fetch('https://leonardoespina.github.io/ar/assets/codigo.patt');
-                const pattContent = await pattResponse.text();
-                
-                if(!pattContent.includes('ARjsMarker')) {
-                    throw new Error("Archivo de marcador inválido");
-                }
-                
-                status.textContent = "Verificando imagen...";
-                const imgResponse = await fetch('assets/plato.jpg');
-                if(!imgResponse.ok) {
-                    throw new Error("Imagen no encontrada");
-                }
-                
-                status.textContent = "Todo listo. Apunta al marcador!";
-                
-            } catch (err) {
-                error.innerHTML = `Error: ${err.message}<br><br>
-                    Soluciones posibles:<br>
-                    1. Verifica que los archivos estén en /assets<br>
-                    2. Renombra pattern-marker.patt a .txt<br>
-                    3. Actualiza la página (Ctrl+F5)`;
-                console.error("Error en assets:", err);
-            }
-        }
-        
-        // Iniciar verificación cuando la escena cargue
-        document.querySelector('a-scene').addEventListener('loaded', () => {
-            checkAssets();
-            setTimeout(() => {
-                loader.style.display = 'none';
-            }, 3000);
-        });
-    </script>
-</body>
+            <a-entity camera></a-entity>
+        </a-scene>
+    </body>
 </html>
-
-
-

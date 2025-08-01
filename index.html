@@ -7,19 +7,34 @@
     <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.2.1/aframe/build/aframe-ar.js"></script>
     <style>
       body { margin: 0; overflow: hidden; }
-      #loading { position: absolute; width: 100%; text-align: center; top: 20px; z-index: 10; color: white; }
+      #loading {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        top: 20px;
+        z-index: 10;
+        color: white;
+        font-family: sans-serif;
+      }
     </style>
   </head>
   <body>
-    <div id="loading">Cargando cámara...</div>
+    <div id="loading">Cargando cámara...<br>Permite el acceso si se solicita.</div>
 
-    <a-scene embedded arjs="sourceType: webcam;">
+    <a-scene embedded arjs="sourceType: webcam; patternRatio: 0.5;">
       <a-assets>
+        <!-- Carga la imagen que se mostrará sobre el marcador -->
         <img id="banner" src="assets/banner.png">
       </a-assets>
 
-      <a-marker type="pattern" url="assets/codigo.patt">
-        <a-image src="#banner" position="0 0 0" rotation="-90 0 0" width="1" height="1"></a-image>
+      <!-- Marcador personalizado (asegúrate que codigo.patt esté en assets/) -->
+      <a-marker preset="custom" type="pattern" url="assets/codigo.patt">
+        <a-image src="#banner"
+                 position="0 0 0"
+                 rotation="-90 0 0"
+                 width="1"
+                 height="1">
+        </a-image>
       </a-marker>
 
       <a-entity camera></a-entity>

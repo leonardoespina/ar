@@ -1,39 +1,50 @@
-<!doctype html>
-<html>
-    <head>
-        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
-    </head>
-    <body style="margin: 0; overflow: hidden;">
-        <a-scene
-            vr-mode-ui="enabled: false;"
-            loading-screen="enabled: false;"
-            arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
-            id="scene"
-            embedded
-            gesture-detector
-        >
-            <a-marker
-                id="animated-marker"
-                type="pattern"
-                preset="custom"
-                url="https://leonardoespina.github.io/ar/assets/codigos.patt"
-                raycaster="objects: .clickable"
-                emitevents="true"
-                cursor="fuse: false; rayOrigin: mouse;"
-                id="markerA"
-            >
-                <a-image
-                    src="assets/plato.png"
-                    scale="1 1 1"
-                    class="clickable"
-                    rotation="-90 0 0"
-                    gesture-handler
-                ></a-image>
-            </a-marker>
-            <a-entity camera="fov: 50"></a-entity>
-        </a-scene>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>AR.js con A-Frame</title>
+  
+  <!-- A-Frame estable (última versión estable conocida) -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
+  <!-- AR.js para A-Frame (rama estable de AR.js) -->
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
+
+  <!-- Gesture support (gestión de gestos con versiones modernas) -->
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/examples/vendor/gesture-detector.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/examples/vendor/gesture-handler.js"></script>
+
+  <style>
+    body { margin: 0; overflow: hidden; }
+  </style>
+</head>
+<body>
+  <a-scene
+    vr-mode-ui="enabled: false"
+    loading-screen="enabled: false"
+    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+    embedded
+    gesture-detector
+  >
+    <a-marker
+      id="animated-marker"
+      type="pattern"
+      preset="custom"
+      url="https://leonardoespina.github.io/ar/assets/codigos.patt"
+      raycaster="objects: .clickable"
+      emitevents="true"
+      cursor="fuse: false; rayOrigin: mouse;"
+    >
+      <a-image
+        src="assets/plato.png"
+        scale="1 1 1"
+        rotation="-90 0 0"
+        class="clickable"
+        gesture-handler
+      ></a-image>
+    </a-marker>
+
+    <a-entity camera="fov: 50"></a-entity>
+  </a-scene>
+</body>
 </html>

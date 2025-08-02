@@ -140,20 +140,17 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>AR.js con modelo 3D interactivo</title>
+  <title>AR Ahuyama 3D</title>
 
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
+  <!-- A-Frame y AR.js -->
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
-
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/examples/vendor/gesture-detector.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/examples/vendor/gesture-handler.js"></script>
 
   <style>
     body { margin: 0; overflow: hidden; }
 
-    /* Estilos para el loader inicial */
     #loader {
       position: fixed;
       top: 0;
@@ -170,62 +167,88 @@
       z-index: 100;
       transition: opacity 1s ease-in-out;
     }
-    
-    /* Clase para ocultar el loader */
+
     .hidden {
       opacity: 0;
       pointer-events: none;
     }
 
-    /* CSS para solucionar el problema de zoom de la cámara en Chrome */
     .a-video-frame {
         object-fit: contain !important;
     }
   </style>
 </head>
 <body>
+  <!-- Loader -->
+  <div id="loader">Cargando modelo 3D...</div>
 
-  <div id="loader">
-    Cargando...
-  </div>
-  
+  <!-- Escena AR -->
+  <a-scene
+    vr-mode-ui="enabled: false"
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false;"
+    renderer="logarithmicDepthBuffer: true;"
+  >
+    <!-- Cámara -->
+    <a-camera position="0 0 0" look-controls-enabled="false"></a-camera>
+
+    <!-- Marcador personalizado -->
+    <a-marker type="pattern" url="patt.ahuyama.patt">
+      <a-entity
+        gltf-model="https://raw.githubusercontent.com/leonardoespina/web/my-new-branch/assets/assets/models/ahuyama.glb"
+        scale="0.5 0.5 0.5"
+        position="0 0 0"
+        rotation="0 0 0"
+        animation-mixer
+        gesture-handler
+      ></a-entity>
+    </a-marker>
+
+    <!-- Escena base -->
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <!-- Script para ocultar el loader al cargar -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const loader = document.getElementById('loader');
-      
-      // Creamos la escena de AR.js dinámicamente
-      const aScene = document.createElement('a-scene');
-      
-      // Configuramos los atributos de la escena
-      aScene.setAttribute('vr-mode-ui', 'enabled: false');
-      aScene.setAttribute('loading-screen', 'enabled: false');
-      aScene.setAttribute('arjs', 'trackingMethod: best; sourceType: webcam; debugUIEnabled: false;');
-      aScene.setAttribute('embedded', '');
-      aScene.setAttribute('gesture-detector', '');
-      
-      // Definimos el contenido de la escena con el marcador, el modelo 3D y la cámara
-      aScene.innerHTML = `
-        <a-marker type="pattern" preset="custom" url="https://leonardoespina.github.io/ar/assets/codigos.patt">
-          <a-entity
-            gltf-model="https://raw.githubusercontent.com/leonardoespina/web/my-new-branch/assets/assets/models/ahuyama.glb"
-            scale="0.1 0.1 0.1"
-            rotation="-90 0 0"
-            gesture-handler
-          ></a-entity>
-        </a-marker>
-        <a-entity camera="fov: 50"></a-entity>
-      `;
+    const model = document.querySelector('[gltf-model]');
+    const loader = document.getElementById('loader');
 
-      // Simula un tiempo de carga de 3 segundos
-      setTimeout(() => {
-        // Añade la escena AR.js al cuerpo del documento para inicializar la cámara
-        document.body.appendChild(aScene);
-        
-        // Oculta el loader
-        loader.classList.add('hidden');
-      }, 3000);
+    model.addEventListener('model-loaded', () => {
+      loader.classList.add('hidden');
     });
   </script>
 
+  <!-- Script opcional: Gestos táctiles para rotar/escala -->
+  <script>
+    AFRAME.registerComponent('gesture-handler', {
+      schema: {
+        enabled: { default: true }
+      },
+      init: function () {
+        const el = this.el;
+        let isDragging = false;
+        let previousX = 0;
+
+        el.sceneEl.canvas.addEventListener('touchstart', (e) => {
+          isDragging = true;
+          previousX = e.touches[0].clientX;
+        });
+
+        el.sceneEl.canvas.addEventListener('touchmove', (e) => {
+          if (!isDragging) return;
+          const deltaX = e.touches[0].clientX - previousX;
+          previousX = e.touches[0].clientX;
+
+          const rotation = el.getAttribute('rotation');
+          rotation.y += deltaX * 0.5;
+          el.setAttribute('rotation', rotation);
+        });
+
+        el.sceneEl.canvas.addEventListener('touchend', () => {
+          isDragging = false;
+        });
+      }
+    });
+  </script>
 </body>
 </html>

@@ -52,51 +52,74 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>AR.js con A-Frame</title>
-  
+  <title>Cargar cámara con botón</title>
+
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
-
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/examples/vendor/gesture-detector.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/examples/vendor/gesture-handler.js"></script>
 
   <style>
     body { margin: 0; overflow: hidden; }
+
+    /* Estilo para el botón de inicio */
+    #start-button {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100;
+      padding: 15px 30px;
+      font-size: 1.5em;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
     
-    /* Agrega este CSS para solucionar el zoom en Chrome */
+    /* CSS para solucionar el zoom en Chrome (si persiste el problema) */
     .a-video-frame {
         object-fit: contain !important;
     }
   </style>
 </head>
 <body>
-  <a-scene
-    vr-mode-ui="enabled: false"
-    loading-screen="enabled: false"
-    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
-    embedded
-    gesture-detector
-  >
-    <a-marker
-      id="animated-marker"
-      type="pattern"
-      preset="custom"
-      url="https://leonardoespina.github.io/ar/assets/codigos.patt"
-      raycaster="objects: .clickable"
-      emitevents="true"
-      cursor="fuse: false; rayOrigin: mouse;"
-    >
-      <a-image
-        src="assets/plato.png"
-        scale="1 1 1"
-        rotation="-90 0 0"
-        class="clickable"
-        gesture-handler
-      ></a-image>
-    </a-marker>
 
-    <a-entity camera="fov: 50"></a-entity>
-  </a-scene>
+  <button id="start-button">Iniciar AR</button>
+
+  <script>
+    // Referencia al botón
+    const startButton = document.getElementById('start-button');
+
+    // Manejador del evento 'click' del botón
+    startButton.addEventListener('click', function() {
+      // Oculta el botón
+      startButton.style.display = 'none';
+
+      // Crea el elemento a-scene
+      const aScene = document.createElement('a-scene');
+      aScene.setAttribute('vr-mode-ui', 'enabled: false');
+      aScene.setAttribute('loading-screen', 'enabled: false');
+      aScene.setAttribute('arjs', 'trackingMethod: best; sourceType: webcam; debugUIEnabled: false;');
+      aScene.setAttribute('embedded', '');
+      
+      // Agrega el marcador y el modelo 3D
+      aScene.innerHTML = `
+        <a-marker type="pattern" preset="custom" url="https://leonardoespina.github.io/ar/assets/codigos.patt">
+          <a-image
+            src="assets/plato.png"
+            scale="1 1 1"
+            rotation="-90 0 0"
+          ></a-image>
+        </a-marker>
+        <a-entity camera="fov: 50"></a-entity>
+      `;
+
+      // Agrega la escena a la página
+      document.body.appendChild(aScene);
+    });
+  </script>
+
 </body>
 </html>

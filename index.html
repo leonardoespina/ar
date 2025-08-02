@@ -52,7 +52,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Cargar cámara con botón</title>
+  <title>Loader AR.js</title>
 
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
@@ -62,23 +62,31 @@
   <style>
     body { margin: 0; overflow: hidden; }
 
-    /* Estilo para el botón de inicio */
-    #start-button {
+    /* Estilos para el loader */
+    #loader {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 100;
-      padding: 15px 30px;
-      font-size: 1.5em;
-      background-color: #4CAF50;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000; /* Fondo negro */
       color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+      font-size: 1.5em;
+      z-index: 100;
+      transition: opacity 1s ease-in-out;
     }
     
-    /* CSS para solucionar el zoom en Chrome (si persiste el problema) */
+    /* Clase para ocultar el loader */
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* CSS para solucionar el zoom en Chrome (por si acaso) */
     .a-video-frame {
         object-fit: contain !important;
     }
@@ -86,25 +94,23 @@
 </head>
 <body>
 
-  <button id="start-button">Iniciar AR</button>
-
+  <div id="loader">
+    Cargando...
+  </div>
+  
   <script>
-    // Referencia al botón
-    const startButton = document.getElementById('start-button');
+    document.addEventListener('DOMContentLoaded', () => {
+      // Obtenemos el elemento del loader
+      const loader = document.getElementById('loader');
 
-    // Manejador del evento 'click' del botón
-    startButton.addEventListener('click', function() {
-      // Oculta el botón
-      startButton.style.display = 'none';
-
-      // Crea el elemento a-scene
+      // Creamos la escena AR.js pero no la mostramos aún
       const aScene = document.createElement('a-scene');
       aScene.setAttribute('vr-mode-ui', 'enabled: false');
       aScene.setAttribute('loading-screen', 'enabled: false');
       aScene.setAttribute('arjs', 'trackingMethod: best; sourceType: webcam; debugUIEnabled: false;');
       aScene.setAttribute('embedded', '');
       
-      // Agrega el marcador y el modelo 3D
+      // Contenido de la escena
       aScene.innerHTML = `
         <a-marker type="pattern" preset="custom" url="https://leonardoespina.github.io/ar/assets/codigos.patt">
           <a-image
@@ -116,8 +122,15 @@
         <a-entity camera="fov: 50"></a-entity>
       `;
 
-      // Agrega la escena a la página
-      document.body.appendChild(aScene);
+      // Simula una carga de 3 segundos
+      setTimeout(() => {
+        // Añade la escena AR.js al cuerpo del documento
+        document.body.appendChild(aScene);
+        
+        // Oculta el loader de forma elegante
+        loader.classList.add('hidden');
+        
+      }, 3000); // 3000 milisegundos = 3 segundos
     });
   </script>
 

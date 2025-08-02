@@ -1,72 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>AR Mobile Fix</title>
     <script src="https://aframe.io/releases/1.0.0/aframe.min.js"></script>
     <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
     <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-      }
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            -webkit-text-size-adjust: 100%;
+            touch-action: manipulation;
+        }
+        a-scene {
+            display: block;
+            width: 100%;
+            height: 100vh;
+        }
     </style>
-  </head>
-  <body>
-    <a-scene
-      embedded
-      arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
-      vr-mode-ui="enabled: false"
-      renderer="logarithmicDepthBuffer: true; precision: medium;"
+</head>
+<body>
+    <a-scene 
+        embedded 
+        arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+        vr-mode-ui="enabled: false"
+        renderer="logarithmicDepthBuffer: true; precision: medium;"
     >
-      <a-marker type="pattern" url="https://leonardoespina.github.io/ar/assets/codigos.patt">
-        <a-image
-          src="assets/plato.png"
-          position="0 0 0"
-          rotation="-90 0 0"
-          width="1.5"
-          height="1.5"
-        ></a-image>
-      </a-marker>
-      
-      <!-- Cámara con ajustes para móvil -->
-      <a-entity 
-        camera="fov: 70; zoom: 1;" 
-        look-controls="enabled: false"
-      ></a-entity>
+        <a-marker type="pattern" url="https://leonardoespina.github.io/ar/assets/codigos.patt">
+            <a-image
+                src="assets/plato.png"
+                position="0 0 0"
+                rotation="-90 0 0"
+                width="1.2"
+                height="1.2"
+            ></a-image>
+        </a-marker>
+        
+        <!-- Cámara con ajustes específicos para Chrome en móviles -->
+        <a-entity 
+            camera="fov: 70; zoom: 1;"
+            look-controls="enabled: false"
+        ></a-entity>
     </a-scene>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Detectar si es móvil
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
-        if(isMobile) {
-          const scene = document.querySelector('a-scene');
-          scene.addEventListener('loaded', function() {
-            // Ajustar FOV según la orientación del dispositivo
-            function adjustCamera() {
-              const camera = document.querySelector('[camera]');
-              const orientation = window.orientation;
-              
-              // FOV diferente para portrait y landscape
-              if(orientation === 0 || orientation === 180) {
-                camera.setAttribute('camera', 'fov', 75); // Portrait
-              } else {
-                camera.setAttribute('camera', 'fov', 65); // Landscape
-              }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Forzar reinicio del viewport en Chrome para Android
+            if (/Android/.test(navigator.userAgent) {
+                const viewport = document.querySelector('meta[name="viewport"]');
+                viewport.content = viewport.content + ', height=' + window.innerHeight;
             }
-            
-            // Ajustar inicialmente y al cambiar orientación
-            adjustCamera();
-            window.addEventListener('orientationchange', adjustCamera);
-            
-            // Reducir ligeramente el tamaño del modelo en móviles
-            const image = document.querySelector('a-image');
-            image.setAttribute('width', 1.2);
-            image.setAttribute('height', 1.2);
-          });
-        }
-      });
+
+            // Ajustes específicos para Chrome en móviles
+            if (/Chrome/.test(navigator.userAgent) && /Mobile/.test(navigator.userAgent)) {
+                const scene = document.querySelector('a-scene');
+                
+                scene.addEventListener('loaded', function() {
+                    const camera = document.querySelector('[camera]');
+                    
+                    // Ajuste especial para Chrome mobile
+                    camera.setAttribute('camera', {
+                        fov: 75,
+                        zoom: 0.9
+                    });
+
+                    // Pequeño retraso para asegurar que los ajustes se apliquen
+                    setTimeout(() => {
+                        window.scrollTo(0, 0);
+                        document.body.style.transform = 'scale(1)';
+                    }, 500);
+                });
+            }
+        });
+
+        // Manejar cambios de orientación
+        window.addEventListener('orientationchange', function() {
+            window.setTimeout(function() {
+                window.scrollTo(0, 0);
+                document.body.style.transform = 'scale(1)';
+            }, 300);
+        });
     </script>
-  </body>
+</body>
 </html>

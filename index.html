@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!Import aframe>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://aframe.io/releases/1.0.0/aframe.min.js"></script>
-    <!import ar.js>
-    <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
-  </head>
-  <body>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
     <a-scene
-      embedded
-      arjs="sourceType: webcam ; videoTexture: true; debugUIEnabled: false;"
-      vr-mode-ui="enabled: false"
+        embedded
+        arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
+        vr-mode-ui="enabled: false"
     >
-
-      <a-marker type="pattern" url="https://leonardoespina.github.io/ar/assets/codigos.patt">
-         <a-image
-          src="assets/plato.png"
-          position="0 0 0"
-          rotation="-90 0 0"
-          width="1.5"
-          height="1.5"
-        ></a-image>
-      </a-marker>
-     
+        <a-marker type="pattern" url="https://leonardoespina.github.io/ar/assets/codigos.patt">
+            <a-image
+                src="assets/plato.png"
+                position="0 0 0"
+                rotation="-90 0 0"
+                width="1.5"
+                height="1.5"
+            ></a-image>
+        </a-marker>
+        <a-entity camera="fov: 70"></a-entity>
     </a-scene>
-  </body>
+</body>
 </html>

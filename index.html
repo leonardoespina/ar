@@ -1,87 +1,39 @@
 <!doctype html>
 <html>
-    <head>
-        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
-        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
-        <style>
-            body { margin: 0; overflow: hidden; }
-            #selection-screen {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                background-color: #f0f0f0;
-                z-index: 10;
-            }
-            .selection-button {
-                padding: 15px 30px;
-                margin: 10px;
-                font-size: 1.2rem;
-                cursor: pointer;
-                border: none;
-                border-radius: 8px;
-                background-color: #007bff;
-                color: white;
-                transition: background-color 0.3s ease;
-            }
-            .selection-button:hover {
-                background-color: #0056b3;
-            }
-            #ar-scene-container {
-                display: none; /* Oculta la escena AR inicialmente */
-                width: 100%;
-                height: 100%;
-            }
-            #ar-scene-container > a-scene {
-                width: 100%;
-                height: 100%;
-            }
-        </style>
-    </head>
-
-    <body>
-        <div id="selection-screen">
-            <h1>Elige tu experiencia</h1>
-            <button id="ar-button" class="selection-button">Realidad Aumentada (AR)</button>
-            <button id="vr-button" class="selection-button">Realidad Virtual (VR)</button>
-        </div>
-
-        <div id="ar-scene-container">
-            <a-scene
-                vr-mode-ui="enabled: false;"
-                loading-screen="enabled: false;"
-                arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
-                id="scene"
-                embedded
-                gesture-detector
-            >
-                <a-marker
-                    id="animated-marker"
-                    type="pattern"
-                    preset="custom"
-                    url="https://leonardoespina.github.io/ar/assets/codigos.patt"
-                    raycaster="objects: .clickable"
-                    emitevents="true"
-                    cursor="fuse: false; rayOrigin: mouse;"
-                    id="markerA"
-                >
-                    <a-image
-                        src="assets/plato.png"
-                        scale="1 1 1"
-                        class="clickable"
-                        rotation="-90 0 0"
-                        gesture-handler
-                    ></a-image>
-                </a-marker>
-                <a-entity camera></a-entity>
-            </a-scene>
-        </div>
-    </body>
+    <head>
+        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
+    </head>
+    <body style="margin: 0; overflow: hidden;">
+        <a-scene
+            vr-mode-ui="enabled: false;"
+            loading-screen="enabled: false;"
+            arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+            id="scene"
+            embedded
+            gesture-detector
+        >
+            <a-marker
+                id="animated-marker"
+                type="pattern"
+                preset="custom"
+                url="https://leonardoespina.github.io/ar/assets/codigos.patt"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+                id="markerA"
+            >
+                <a-image
+                    src="assets/plato.png"
+                    scale="1 1 1"
+                    class="clickable"
+                    rotation="-90 0 0"
+                    gesture-handler
+                ></a-image>
+            </a-marker>
+            <a-entity camera></a-entity>
+        </a-scene>
+    </body>
 </html>

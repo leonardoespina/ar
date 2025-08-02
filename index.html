@@ -195,8 +195,9 @@
     <!-- Marcador personalizado -->
     <a-marker type="pattern" url="assets/codigos.patt">
       <a-entity
+        id="modeloAhuyama"
         gltf-model="https://raw.githubusercontent.com/leonardoespina/web/my-new-branch/assets/assets/models/ahuyama.glb"
-        scale="0.5 0.5 0.5"
+        scale="2 2 2"
         position="0 0 0"
         rotation="0 0 0"
         animation-mixer
@@ -218,35 +219,71 @@
     });
   </script>
 
-  <!-- Script opcional: Gestos táctiles para rotar/escala -->
+  <!-- Script mejorado para gestos: rotar + zoom -->
   <script>
     AFRAME.registerComponent('gesture-handler', {
-      schema: {
-        enabled: { default: true }
-      },
+      schema: { enabled: { default: true } },
       init: function () {
         const el = this.el;
         let isDragging = false;
-        let previousX = 0;
+        let previousTouches = [];
 
         el.sceneEl.canvas.addEventListener('touchstart', (e) => {
-          isDragging = true;
-          previousX = e.touches[0].clientX;
+          if (e.touches.length === 1) {
+            isDragging = true;
+          }
+          previousTouches = [...e.touches];
         });
 
         el.sceneEl.canvas.addEventListener('touchmove', (e) => {
-          if (!isDragging) return;
-          const deltaX = e.touches[0].clientX - previousX;
-          previousX = e.touches[0].clientX;
+          if (!this.data.enabled) return;
 
-          const rotation = el.getAttribute('rotation');
-          rotation.y += deltaX * 0.5;
-          el.setAttribute('rotation', rotation);
+          if (e.touches.length === 1 && isDragging) {
+            const deltaX = e.touches[0].clientX - previousTouches[0].clientX;
+            const deltaY = e.touches[0].clientY - previousTouches[0].clientY;
+
+            const rotation = el.getAttribute('rotation');
+            rotation.y += deltaX * 0.3;
+            rotation.x += deltaY * 0.3;
+            el.setAttribute('rotation', rotation);
+          }
+
+          if (e.touches.length === 2 && previousTouches.length === 2) {
+            const currentDist = getTouchDistance(e.touches[0], e.touches[1]);
+            const prevDist = getTouchDistance(previousTouches[0], previousTouches[1]);
+
+            const scale = el.getAttribute('scale');
+            let zoomFactor = currentDist / prevDist;
+            zoomFactor = Math.min(Math.max(zoomFactor, 0.9), 1.1); // Limitar zoom por frame
+
+            const newScale = {
+              x: scale.x * zoomFactor,
+              y: scale.y * zoomFactor,
+              z: scale.z * zoomFactor
+            };
+
+            // Limitar tamaño final del modelo
+            const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
+            newScale.x = clamp(newScale.x, 0.5, 5);
+            newScale.y = clamp(newScale.y, 0.5, 5);
+            newScale.z = clamp(newScale.z, 0.5, 5);
+
+            el.setAttribute('scale', `${newScale.x} ${newScale.y} ${newScale.z}`);
+          }
+
+          previousTouches = [...e.touches];
         });
 
         el.sceneEl.canvas.addEventListener('touchend', () => {
           isDragging = false;
+          previousTouches = [];
         });
+
+        function getTouchDistance(p1, p2) {
+          const dx = p2.clientX - p1.clientX;
+          const dy = p2.clientY - p1.clientY;
+          return Math.sqrt(dx * dx + dy * dy);
+        }
       }
     });
   </script>

@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!Import aframe>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://aframe.io/releases/1.0.0/aframe.min.js"></script>
-    <!import ar.js>
     <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
   </head>
   <body>
     <a-scene
       embedded
-      arjs="sourceType: webcam ; videoTexture: true; debugUIEnabled: false;"
+      arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
       vr-mode-ui="enabled: false"
     >
-
       <a-marker type="pattern" url="https://leonardoespina.github.io/ar/assets/codigos.patt">
-         <a-image
+        <a-image
           src="assets/plato.png"
           position="0 0 0"
           rotation="-90 0 0"
@@ -22,7 +20,8 @@
           height="1.5"
         ></a-image>
       </a-marker>
-      <a-entity camera></a-entity>
+      <!-- Cámara con FOV ajustado para móviles -->
+      <a-entity camera="fov: 80"></a-entity>
     </a-scene>
   </body>
 </html>

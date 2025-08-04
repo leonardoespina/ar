@@ -45,31 +45,39 @@
   <div id="loader">Cargando modelo 3D...</div>
 
   <!-- Escena AR -->
-  <a-scene
-    vr-mode-ui="enabled: false"
-    embedded
-    arjs="sourceType: webcam; debugUIEnabled: false;"
-    renderer="logarithmicDepthBuffer: true;"
+ <a-scene
+  vr-mode-ui="enabled: false"
+  embedded
+  arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+  renderer="logarithmicDepthBuffer: true;"
+>
+  <!-- Cámara -->
+  <a-camera position="0 0 0" look-controls-enabled="false"></a-camera>
+
+  <!-- Marcador NFT -->
+  <a-nft
+    type="nft"
+    url="assets/nft/imagen"
+    smooth="true"
+    smoothCount="10"
+    smoothTolerance="0.01"
+    smoothThreshold="5"
   >
-    <!-- Cámara -->
-    <a-camera position="0 0 0" look-controls-enabled="false"></a-camera>
+    <a-entity
+      id="modeloAhuyama"
+      gltf-model="https://raw.githubusercontent.com/leonardoespina/web/my-new-branch/assets/assets/models/ahuyama.glb"
+      scale="2 2 2"
+      position="0 0 0"
+      rotation="0 0 0"
+      animation-mixer
+      gesture-handler
+    ></a-entity>
+  </a-nft>
 
-    <!-- Marcador personalizado -->
-    <a-marker type="pattern" url="assets/codigos.patt">
-      <a-entity
-        id="modeloAhuyama"
-        gltf-model="https://raw.githubusercontent.com/leonardoespina/web/my-new-branch/assets/assets/models/ahuyama.glb"
-        scale="2 2 2"
-        position="0 0 0"
-        rotation="0 0 0"
-        animation-mixer
-        gesture-handler
-      ></a-entity>
-    </a-marker>
+  <!-- Cámara base -->
+  <a-entity camera></a-entity>
+</a-scene>
 
-    <!-- Escena base -->
-    <a-entity camera></a-entity>
-  </a-scene>
 
   <!-- Script para ocultar el loader al cargar -->
   <script>
@@ -172,4 +180,5 @@
 </script>
 </body>
 </html>
+
 

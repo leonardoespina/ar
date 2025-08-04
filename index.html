@@ -58,7 +58,7 @@
     <a-marker type="pattern" url="assets/codigos.patt">
       <a-entity
         id="modeloAhuyama"
-        gltf-model="https://raw.githubusercontent.com/leonardoespina/web/my-new-branch/assets/assets/models/burger.glb"
+        gltf-model="https://raw.githubusercontent.com/leonardoespina/web/my-new-branch/assets/assets/models/ahuyama.glb"
         scale="2 2 2"
         position="0 0 0"
         rotation="0 0 0"
@@ -130,7 +130,7 @@
             newScale.y = clamp(newScale.y, 0.5, 5);
             newScale.z = clamp(newScale.z, 0.5, 5);
 
-            el.setAttribute('scale', ${newScale.x} ${newScale.y} ${newScale.z});
+            el.setAttribute('scale', `${newScale.x} ${newScale.y} ${newScale.z}`);
           }
 
           previousTouches = [...e.touches];
@@ -151,8 +151,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-

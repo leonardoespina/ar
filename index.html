@@ -1,59 +1,185 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>AR.js NFT Example</title>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <title>AR Image Tracking - Burger</title>
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+
+    <!-- A-Frame y AR.js con NFT -->
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar-nft.min.js"></script>
 
     <style>
-      .arjs-loader {
-        height: 100%;
-        width: 100%;
-        position: absolute;
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      #loader {
+        position: fixed;
         top: 0;
         left: 0;
-        background-color: rgba(0, 0, 0, 0.8);
-        z-index: 9999;
+        width: 100%;
+        height: 100%;
+        background-color: #000;
+        color: white;
         display: flex;
         justify-content: center;
         align-items: center;
+        font-family: sans-serif;
+        font-size: 1.5em;
+        z-index: 100;
+        transition: opacity 1s ease-in-out;
       }
-      .arjs-loader div {
-        text-align: center;
-        font-size: 1.25em;
-        color: white;
+      .hidden {
+        opacity: 0;
+        pointer-events: none;
       }
     </style>
   </head>
+  <body>
+    <!-- Loader -->
+    <div id="loader">Cargando modelo 3D...</div>
 
-  <body style="margin: 0px; overflow: hidden;">
-    <div class="arjs-loader">
-      <div>Loading, please wait...</div>
-    </div>
+    <!-- Escena AR con NFT -->
     <a-scene
-      vr-mode-ui="enabled: false;"
-      renderer="logarithmicDepthBuffer: true;"
+      vr-mode-ui="enabled: false"
       embedded
-      arjs="trackingMethod: best; sourceType: webcam;debugUIEnabled: false;"
+      renderer="logarithmicDepthBuffer: true;"
+      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
     >
+      <!-- Cámara -->
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <!-- Seguimiento de Imagen NFT -->
       <a-nft
         type="nft"
-        url="https://leonardoespina.github.io/ar/assets/nft/imagen"
+        url="assets/nft/imagen"
         smooth="true"
         smoothCount="10"
-        smoothTolerance=".01"
+        smoothTolerance="0.01"
         smoothThreshold="5"
       >
         <a-entity
-          gltf-model="https://leonardoespina.github.io/ar/assets/1.glb"
-          scale="5 5 5"
-          position="50 150 0"
-        >
-        </a-entity>
+          id="modeloBurger"
+          gltf-model="https://raw.githubusercontent.com/leonardoespina/web/my-new-branch/assets/assets/models/burger.glb"
+          scale="2 2 2"
+          position="0 0 0"
+          rotation="0 0 0"
+          animation-mixer
+          gesture-handler
+        ></a-entity>
       </a-nft>
+
+      <!-- Escena base -->
       <a-entity camera></a-entity>
     </a-scene>
+
+    <!-- Script para ocultar loader -->
+    <script>
+      const model = document.querySelector("[gltf-model]");
+      const loader = document.getElementById("loader");
+
+      model.addEventListener("model-loaded", () => {
+        loader.classList.add("hidden");
+      });
+    </script>
+
+    <!-- Gesture handler (rotar + zoom + mover) -->
+    <script>
+      AFRAME.registerComponent("gesture-handler", {
+        schema: { enabled: { default: true } },
+        init: function () {
+          const el = this.el;
+          let previousTouches = [];
+          let previousMidpoint = null;
+
+          el.sceneEl.canvas.addEventListener("touchstart", (e) => {
+            previousTouches = [...e.touches];
+            if (e.touches.length === 2) {
+              previousMidpoint = getMidpoint(e.touches[0], e.touches[1]);
+            }
+          });
+
+          el.sceneEl.canvas.addEventListener("touchmove", (e) => {
+            if (!this.data.enabled) return;
+
+            // Rotación
+            if (e.touches.length === 1 && previousTouches.length === 1) {
+              const deltaX = e.touches[0].clientX - previousTouches[0].clientX;
+              const deltaY = e.touches[0].clientY - previousTouches[0].clientY;
+
+              const rotation = el.getAttribute("rotation");
+              rotation.y += deltaX * 0.3;
+              rotation.x += deltaY * 0.3;
+              el.setAttribute("rotation", rotation);
+            }
+
+            // Zoom + desplazamiento
+            if (e.touches.length === 2 && previousTouches.length === 2) {
+              const currentDist = getTouchDistance(e.touches[0], e.touches[1]);
+              const prevDist = getTouchDistance(
+                previousTouches[0],
+                previousTouches[1]
+              );
+
+              const scale = el.getAttribute("scale");
+              let zoomFactor = currentDist / prevDist;
+              zoomFactor = Math.min(Math.max(zoomFactor, 0.9), 1.1);
+
+              const newScale = {
+                x: clamp(scale.x * zoomFactor, 0.5, 5),
+                y: clamp(scale.y * zoomFactor, 0.5, 5),
+                z: clamp(scale.z * zoomFactor, 0.5, 5),
+              };
+              el.setAttribute(
+                "scale",
+                `${newScale.x} ${newScale.y} ${newScale.z}`
+              );
+
+              // Desplazamiento
+              const currentMid = getMidpoint(e.touches[0], e.touches[1]);
+              const deltaX = currentMid.x - previousMidpoint.x;
+              const deltaY = currentMid.y - previousMidpoint.y;
+
+              const position = el.getAttribute("position");
+              const movementFactor = 0.01;
+              position.x += deltaX * movementFactor;
+              position.y -= deltaY * movementFactor;
+              el.setAttribute("position", position);
+
+              previousMidpoint = currentMid;
+            }
+
+            previousTouches = [...e.touches];
+          });
+
+          el.sceneEl.canvas.addEventListener("touchend", () => {
+            previousTouches = [];
+            previousMidpoint = null;
+          });
+
+          function getTouchDistance(p1, p2) {
+            const dx = p2.clientX - p1.clientX;
+            const dy = p2.clientY - p1.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+          }
+
+          function getMidpoint(p1, p2) {
+            return {
+              x: (p1.clientX + p2.clientX) / 2,
+              y: (p1.clientY + p2.clientY) / 2,
+            };
+          }
+
+          function clamp(val, min, max) {
+            return Math.min(Math.max(val, min), max);
+          }
+        },
+      });
+    </script>
   </body>
 </html>
+

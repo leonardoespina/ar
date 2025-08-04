@@ -1,18 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>AR Ahuyama 3D</title>
+  <title>AR NFT - Ahuyama</title>
 
   <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
   <!-- A-Frame y AR.js -->
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar-nft.min.js"></script>
 
   <style>
     body { margin: 0; overflow: hidden; }
-
     #loader {
       position: fixed;
       top: 0;
@@ -29,156 +28,191 @@
       z-index: 100;
       transition: opacity 1s ease-in-out;
     }
+    .hidden { opacity: 0; pointer-events: none; }
 
-    .hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .a-video-frame {
-        object-fit: contain !important;
+    #error-dialog {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ff4444;
+      color: white;
+      padding: 1em 1.5em;
+      border-radius: 8px;
+      font-family: sans-serif;
+      font-size: 1rem;
+      z-index: 999;
     }
   </style>
 </head>
+
 <body>
   <!-- Loader -->
   <div id="loader">Cargando modelo 3D...</div>
+  <div id="error-dialog">❌ Error al cargar AR</div>
 
   <!-- Escena AR -->
- <a-scene
-  vr-mode-ui="enabled: false"
-  embedded
-  arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
-  renderer="logarithmicDepthBuffer: true;"
->
-  <!-- Cámara -->
-  <a-camera position="0 0 0" look-controls-enabled="false"></a-camera>
-
-  <!-- Marcador NFT -->
-  <a-nft
-    type="nft"
-    url="assets/nft/imagen"
-    smooth="true"
-    smoothCount="10"
-    smoothTolerance="0.01"
-    smoothThreshold="5"
+  <a-scene
+    vr-mode-ui="enabled: false"
+    embedded
+    renderer="logarithmicDepthBuffer: true;"
+    arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
   >
-    <a-entity
-      id="modeloAhuyama"
-      gltf-model="https://raw.githubusercontent.com/leonardoespina/web/my-new-branch/assets/assets/models/ahuyama.glb"
-      scale="2 2 2"
-      position="0 0 0"
-      rotation="0 0 0"
-      animation-mixer
-      gesture-handler
-    ></a-entity>
-  </a-nft>
+    <!-- NFT Marker -->
+    <a-nft
+      type="nft"
+      url="assets/nft/imagen/imagen"
+      smooth="true"
+      smoothCount="10"
+      smoothTolerance="0.01"
+      smoothThreshold="5"
+    >
+      <a-entity
+        id="modeloAhuyama"
+        gltf-model="https://raw.githubusercontent.com/leonardoespina/web/my-new-branch/assets/assets/models/ahuyama.glb"
+        scale="2 2 2"
+        position="0 0 0"
+        rotation="0 0 0"
+        animation-mixer
+        gesture-handler
+      ></a-entity>
+    </a-nft>
 
-  <!-- Cámara base -->
-  <a-entity camera></a-entity>
-</a-scene>
+    <!-- Cámara -->
+    <a-entity camera></a-entity>
+  </a-scene>
 
-
-
-  <!-- Script para ocultar el loader al cargar -->
+  <!-- Ocultar loader cuando cargue el modelo -->
   <script>
     const model = document.querySelector('[gltf-model]');
     const loader = document.getElementById('loader');
 
-    model.addEventListener('model-loaded', () => {
+    model?.addEventListener('model-loaded', () => {
       loader.classList.add('hidden');
     });
   </script>
 
-  <!-- Script mejorado para gestos: rotar + zoom -->
- <script>
-  AFRAME.registerComponent('gesture-handler', {
-    schema: { enabled: { default: true } },
-    init: function () {
-      const el = this.el;
-      let previousTouches = [];
-      let previousMidpoint = null;
+  <!-- Mostrar errores si algo falla -->
+  <script>
+    const showError = (mensaje) => {
+      const dialog = document.getElementById("error-dialog");
+      dialog.textContent = "❌ " + mensaje;
+      dialog.style.display = "block";
+      setTimeout(() => dialog.style.display = "none", 7000);
+    };
 
-      el.sceneEl.canvas.addEventListener('touchstart', (e) => {
-        previousTouches = [...e.touches];
-        if (e.touches.length === 2) {
-          previousMidpoint = getMidpoint(e.touches[0], e.touches[1]);
-        }
+    window.addEventListener("error", function (event) {
+      showError("Error inesperado: " + event.message);
+    });
+
+    const nftMarker = document.querySelector("a-nft");
+    if (nftMarker) {
+      nftMarker.addEventListener("markerFound", () => console.log("✅ NFT detectado"));
+      nftMarker.addEventListener("markerLost", () => console.warn("📵 NFT perdido"));
+      nftMarker.addEventListener("error", (e) => {
+        showError("Error con el marcador NFT");
+        console.error(e);
       });
-
-      el.sceneEl.canvas.addEventListener('touchmove', (e) => {
-        if (!this.data.enabled) return;
-
-        // ROTACIÓN con 1 dedo
-        if (e.touches.length === 1 && previousTouches.length === 1) {
-          const deltaX = e.touches[0].clientX - previousTouches[0].clientX;
-          const deltaY = e.touches[0].clientY - previousTouches[0].clientY;
-
-          const rotation = el.getAttribute('rotation');
-          rotation.y += deltaX * 0.3;
-          rotation.x += deltaY * 0.3;
-          el.setAttribute('rotation', rotation);
-        }
-
-        // ZOOM y DESPLAZAMIENTO con 2 dedos
-        if (e.touches.length === 2 && previousTouches.length === 2) {
-          const currentDist = getTouchDistance(e.touches[0], e.touches[1]);
-          const prevDist = getTouchDistance(previousTouches[0], previousTouches[1]);
-
-          // ZOOM
-          let zoomFactor = currentDist / prevDist;
-          zoomFactor = Math.min(Math.max(zoomFactor, 0.9), 1.1);
-
-          const scale = el.getAttribute('scale');
-          const newScale = {
-            x: clamp(scale.x * zoomFactor, 0.5, 5),
-            y: clamp(scale.y * zoomFactor, 0.5, 5),
-            z: clamp(scale.z * zoomFactor, 0.5, 5)
-          };
-          el.setAttribute('scale', `${newScale.x} ${newScale.y} ${newScale.z}`);
-
-          // DESPLAZAMIENTO
-          const currentMid = getMidpoint(e.touches[0], e.touches[1]);
-          const deltaX = currentMid.x - previousMidpoint.x;
-          const deltaY = currentMid.y - previousMidpoint.y;
-
-          const position = el.getAttribute('position');
-          // Ajusta sensibilidad del movimiento
-          const movementFactor = 0.01;
-          position.x += deltaX * movementFactor;
-          position.y -= deltaY * movementFactor;
-          el.setAttribute('position', position);
-
-          previousMidpoint = currentMid;
-        }
-
-        previousTouches = [...e.touches];
-      });
-
-      el.sceneEl.canvas.addEventListener('touchend', () => {
-        previousTouches = [];
-        previousMidpoint = null;
-      });
-
-      function getTouchDistance(p1, p2) {
-        const dx = p2.clientX - p1.clientX;
-        const dy = p2.clientY - p1.clientY;
-        return Math.sqrt(dx * dx + dy * dy);
-      }
-
-      function getMidpoint(p1, p2) {
-        return {
-          x: (p1.clientX + p2.clientX) / 2,
-          y: (p1.clientY + p2.clientY) / 2
-        };
-      }
-
-      function clamp(val, min, max) {
-        return Math.min(Math.max(val, min), max);
-      }
+    } else {
+      showError("No se encontró <a-nft>. Verifica el HTML.");
     }
-  });
-</script>
+
+    const model = document.querySelector('[gltf-model]');
+    if (model) {
+      model.addEventListener('model-error', () => {
+        showError("No se pudo cargar el modelo 3D");
+      });
+    } else {
+      showError("No se encontró modelo 3D en la escena.");
+    }
+  </script>
+
+  <!-- Gestos: rotar, zoom, mover -->
+  <script>
+    AFRAME.registerComponent('gesture-handler', {
+      schema: { enabled: { default: true } },
+      init: function () {
+        const el = this.el;
+        let previousTouches = [];
+        let previousMidpoint = null;
+
+        el.sceneEl.canvas.addEventListener('touchstart', (e) => {
+          previousTouches = [...e.touches];
+          if (e.touches.length === 2) {
+            previousMidpoint = getMidpoint(e.touches[0], e.touches[1]);
+          }
+        });
+
+        el.sceneEl.canvas.addEventListener('touchmove', (e) => {
+          if (!this.data.enabled) return;
+
+          // Rotar
+          if (e.touches.length === 1 && previousTouches.length === 1) {
+            const deltaX = e.touches[0].clientX - previousTouches[0].clientX;
+            const deltaY = e.touches[0].clientY - previousTouches[0].clientY;
+            const rotation = el.getAttribute('rotation');
+            rotation.y += deltaX * 0.3;
+            rotation.x += deltaY * 0.3;
+            el.setAttribute('rotation', rotation);
+          }
+
+          // Zoom + Mover
+          if (e.touches.length === 2 && previousTouches.length === 2) {
+            const currentDist = getTouchDistance(e.touches[0], e.touches[1]);
+            const prevDist = getTouchDistance(previousTouches[0], previousTouches[1]);
+
+            let zoomFactor = currentDist / prevDist;
+            zoomFactor = Math.min(Math.max(zoomFactor, 0.9), 1.1);
+
+            const scale = el.getAttribute('scale');
+            const newScale = {
+              x: clamp(scale.x * zoomFactor, 0.5, 5),
+              y: clamp(scale.y * zoomFactor, 0.5, 5),
+              z: clamp(scale.z * zoomFactor, 0.5, 5)
+            };
+            el.setAttribute('scale', `${newScale.x} ${newScale.y} ${newScale.z}`);
+
+            const currentMid = getMidpoint(e.touches[0], e.touches[1]);
+            const deltaX = currentMid.x - previousMidpoint.x;
+            const deltaY = currentMid.y - previousMidpoint.y;
+
+            const position = el.getAttribute('position');
+            const movementFactor = 0.01;
+            position.x += deltaX * movementFactor;
+            position.y -= deltaY * movementFactor;
+            el.setAttribute('position', position);
+
+            previousMidpoint = currentMid;
+          }
+
+          previousTouches = [...e.touches];
+        });
+
+        el.sceneEl.canvas.addEventListener('touchend', () => {
+          previousTouches = [];
+          previousMidpoint = null;
+        });
+
+        function getTouchDistance(p1, p2) {
+          const dx = p2.clientX - p1.clientX;
+          const dy = p2.clientY - p1.clientY;
+          return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        function getMidpoint(p1, p2) {
+          return {
+            x: (p1.clientX + p2.clientX) / 2,
+            y: (p1.clientY + p2.clientY) / 2
+          };
+        }
+
+        function clamp(val, min, max) {
+          return Math.min(Math.max(val, min), max);
+        }
+      }
+    });
+  </script>
 </body>
 </html>
 

@@ -1,9 +1,45 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- A-Frame y MindAR -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+    <!-- Componentes para interacción -->
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-gesture-detector@3.3.0/dist/aframe-gesture-detector.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-super-hands@4.0.5/dist/aframe-super-hands.min.js"></script>
+    <script>
+      // Componente personalizado para rotar con gesto
+      AFRAME.registerComponent("gesture-rotate-scale", {
+        schema: {
+          minScale: { type: "number", default: 0.3 },
+          maxScale: { type: "number", default: 4 },
+        },
+        init: function () {
+          this.scaleFactor = 1;
+          this.initialRotationY = 0;
+          this.el.addEventListener("onefingermove", (evt) => {
+            this.el.object3D.rotation.y += evt.detail.positionChange.x * 0.01;
+          });
+          this.el.addEventListener("twofingermove", (evt) => {
+            const scaleChange = evt.detail.spreadChange / 200;
+            this.scaleFactor = THREE.MathUtils.clamp(
+              this.scaleFactor + scaleChange,
+              this.data.minScale,
+              this.data.maxScale
+            );
+            this.el.object3D.scale.set(
+              this.scaleFactor,
+              this.scaleFactor,
+              this.scaleFactor
+            );
+          });
+        },
+      });
+    </script>
   </head>
+
   <body>
     <a-scene
       mindar-image="imageTargetSrc: targets/targets.mind;"
@@ -11,6 +47,8 @@
       renderer="colorManagement: true, physicallyCorrectLights"
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: false"
+      gesture-detector
+      embedded
     >
       <a-assets>
         <a-asset-item id="avatarModel" src="models/1.glb"></a-asset-item>
@@ -19,16 +57,20 @@
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0">
-        <a-gltf-model
+        <!-- Modelo interactivo -->
+        <a-entity
+          id="model-container"
           rotation="0 0 0"
-          position="0 0.2 0"
-          scale="2 2 2"
-          src="#avatarModel"
-        ></a-gltf-model>
+          position="0 -1 0"
+          gesture-rotate-scale
+        >
+          <a-gltf-model src="#avatarModel"></a-gltf-model>
+        </a-entity>
       </a-entity>
     </a-scene>
   </body>
 </html>
+
 <!-- <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -61,3 +103,4 @@ physicallyCorrectLights"
   </body>
 </html>
 -->
+

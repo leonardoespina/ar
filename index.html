@@ -159,7 +159,7 @@
     </script>
   </body>
 </html>
--->
+ 
  <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -191,7 +191,97 @@ physicallyCorrectLights"
     </a-scene>
   </body>
 </html>
- 
+ -->
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        touch-action: none;
+      }
+      .interaction-prompt {
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+        text-align: center;
+        color: white;
+        background-color: rgba(0,0,0,0.5);
+        padding: 10px;
+        font-family: Arial, sans-serif;
+        z-index: 1000;
+      }
+    </style>
+  </head>
+  <body>
+    <a-scene
+      mindar-image="imageTargetSrc: targets/targets.mind;"
+      color-space="sRGB"
+      renderer="colorManagement: true; physicallyCorrectLights: true"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+    >
+      <a-assets>
+        <a-asset-item id="foodModel" src="models/1.glb"></a-asset-item>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-entity 
+          id="food-container"
+          gltf-model="#foodModel"
+          scale="0.5 0.5 0.5"
+          position="0 0 0"
+          rotation="0 0 0"
+          animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"
+        >
+        </a-entity>
+      </a-entity>
+      
+      <div class="interaction-prompt" id="prompt">Toca la pantalla para interactuar</div>
+      
+      <a-entity light="type: ambient; color: #FFF; intensity: 1"></a-entity>
+      <a-entity light="type: directional; color: #FFF; intensity: 0.5" position="0 1 1"></a-entity>
+    </a-scene>
+
+    <script>
+      const foodContainer = document.querySelector('#food-container');
+      const promptElement = document.getElementById('prompt');
+      let isScaled = false;
+      
+      // Ajustar tamaño según dispositivo
+      function adjustScale() {
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        foodContainer.setAttribute('scale', isMobile ? '0.3 0.3 0.3' : '0.5 0.5 0.5');
+      }
+      
+      // Interacción táctil
+      window.addEventListener('touchstart', () => {
+        const newScale = isScaled ? '0.3 0.3 0.3' : '0.4 0.4 0.4';
+        foodContainer.setAttribute('scale', newScale);
+        isScaled = !isScaled;
+        
+        // Ocultar prompt después de la primera interacción
+        promptElement.style.display = 'none';
+      });
+      
+      // Inicialización
+      window.addEventListener('load', () => {
+        adjustScale();
+        
+        // Ocultar prompt después de 5 segundos
+        setTimeout(() => {
+          promptElement.style.display = 'none';
+        }, 5000);
+      });
+    </script>
+  </body>
+</html>
+
 
 
 

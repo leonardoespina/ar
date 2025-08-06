@@ -4,35 +4,36 @@
     <!-- A-Frame y MindAR -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-
-    <!-- Componentes para interacción -->
-    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-gesture-detector@3.3.0/dist/aframe-gesture-detector.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-super-hands@4.0.5/dist/aframe-super-hands.min.js"></script>
+
+    <!-- Componente personalizado de interacción -->
     <script>
-      // Componente personalizado para rotar con gesto
-      AFRAME.registerComponent("gesture-rotate-scale", {
+      AFRAME.registerComponent("interactivo-modelo", {
         schema: {
-          minScale: { type: "number", default: 0.3 },
-          maxScale: { type: "number", default: 4 },
+          rotationSpeed: { default: 1 },
+          scaleSpeed: { default: 1 },
+          minScale: { default: 0.3 },
+          maxScale: { default: 3 },
         },
         init: function () {
-          this.scaleFactor = 1;
-          this.initialRotationY = 0;
-          this.el.addEventListener("onefingermove", (evt) => {
-            this.el.object3D.rotation.y += evt.detail.positionChange.x * 0.01;
+          this.initialScale = this.el.object3D.scale.clone();
+          this.currentScale = this.el.object3D.scale.x;
+          this.el.sceneEl.addEventListener("onefingermove", (evt) => {
+            const deltaX = evt.detail.positionChange.x;
+            this.el.object3D.rotation.y -= deltaX * 0.01 * this.data.rotationSpeed;
           });
-          this.el.addEventListener("twofingermove", (evt) => {
-            const scaleChange = evt.detail.spreadChange / 200;
-            this.scaleFactor = THREE.MathUtils.clamp(
-              this.scaleFactor + scaleChange,
+
+          this.el.sceneEl.addEventListener("twofingermove", (evt) => {
+            const scaleChange = evt.detail.spreadChange * 0.005 * this.data.scaleSpeed;
+            this.currentScale = THREE.MathUtils.clamp(
+              this.currentScale + scaleChange,
               this.data.minScale,
               this.data.maxScale
             );
             this.el.object3D.scale.set(
-              this.scaleFactor,
-              this.scaleFactor,
-              this.scaleFactor
+              this.currentScale,
+              this.currentScale,
+              this.currentScale
             );
           });
         },
@@ -57,12 +58,10 @@
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0">
-        <!-- Modelo interactivo -->
         <a-entity
           id="model-container"
-          rotation="0 0 0"
           position="0 -1 0"
-          gesture-rotate-scale
+          interactivo-modelo
         >
           <a-gltf-model src="#avatarModel"></a-gltf-model>
         </a-entity>
@@ -70,6 +69,7 @@
     </a-scene>
   </body>
 </html>
+
 
 <!-- <html>
   <head>
@@ -103,4 +103,5 @@ physicallyCorrectLights"
   </body>
 </html>
 -->
+
 

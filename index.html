@@ -203,16 +203,23 @@ physicallyCorrectLights"
         overflow: hidden;
         touch-action: none;
       }
-      .interaction-prompt {
+      .scale-controls {
         position: absolute;
         bottom: 20px;
         width: 100%;
-        text-align: center;
-        color: white;
-        background-color: rgba(0,0,0,0.5);
-        padding: 10px;
-        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
         z-index: 1000;
+      }
+      .scale-btn {
+        background-color: rgba(0,0,0,0.5);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
       }
     </style>
   </head>
@@ -232,51 +239,90 @@ physicallyCorrectLights"
 
       <a-entity mindar-image-target="targetIndex: 0">
         <a-entity 
-          id="food-container"
+          id="food-dish"
           gltf-model="#foodModel"
-          scale="0.5 0.5 0.5"
-          position="0 0 0"
-          rotation="0 0 0"
-          animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"
+          scale="0.8 0.8 0.8"
+          position="0 0.2 0"
+          rotation="-15 0 0"
         >
         </a-entity>
       </a-entity>
       
-      <div class="interaction-prompt" id="prompt">Toca la pantalla para interactuar</div>
+      <div class="scale-controls">
+        <button class="scale-btn" id="zoom-in">+</button>
+        <button class="scale-btn" id="zoom-out">-</button>
+      </div>
       
-      <a-entity light="type: ambient; color: #FFF; intensity: 1"></a-entity>
-      <a-entity light="type: directional; color: #FFF; intensity: 0.5" position="0 1 1"></a-entity>
+      <a-entity light="type: ambient; color: #FFF; intensity: 1.2"></a-entity>
+      <a-entity light="type: directional; color: #FFF; intensity: 0.8" position="0 2 1"></a-entity>
     </a-scene>
 
     <script>
-      const foodContainer = document.querySelector('#food-container');
-      const promptElement = document.getElementById('prompt');
-      let isScaled = false;
+      const foodDish = document.querySelector('#food-dish');
+      const zoomInBtn = document.getElementById('zoom-in');
+      const zoomOutBtn = document.getElementById('zoom-out');
       
-      // Ajustar tamaño según dispositivo
-      function adjustScale() {
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        foodContainer.setAttribute('scale', isMobile ? '0.3 0.3 0.3' : '0.5 0.5 0.5');
+      // Tamaño inicial ajustado para platos de comida
+      let currentScale = 0.8;
+      
+      // Ajustar posición y rotación para mejor visualización
+      function setupFoodPresentation() {
+        foodDish.setAttribute('position', '0 0.2 0');
+        foodDish.setAttribute('rotation', '-15 0 0');
       }
       
-      // Interacción táctil
-      window.addEventListener('touchstart', () => {
-        const newScale = isScaled ? '0.3 0.3 0.3' : '0.4 0.4 0.4';
-        foodContainer.setAttribute('scale', newScale);
-        isScaled = !isScaled;
+      // Controles de zoom
+      zoomInBtn.addEventListener('click', () => {
+        currentScale += 0.1;
+        foodDish.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
+      });
+      
+      zoomOutBtn.addEventListener('click', () => {
+        if(currentScale > 0.3) {
+          currentScale -= 0.1;
+          foodDish.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
+        }
+      });
+      
+      // Interacción táctil para rotación
+      let isDragging = false;
+      let previousPosition = { x: 0 };
+      let currentRotation = 0;
+      
+      window.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        previousPosition.x = e.touches[0].clientX;
+      });
+      
+      window.addEventListener('touchmove', (e) => {
+        if(!isDragging) return;
         
-        // Ocultar prompt después de la primera interacción
-        promptElement.style.display = 'none';
+        const deltaX = e.touches[0].clientX - previousPosition.x;
+        currentRotation += deltaX * 0.5;
+        foodDish.setAttribute('rotation', `-15 ${currentRotation} 0`);
+        
+        previousPosition.x = e.touches[0].clientX;
+      });
+      
+      window.addEventListener('touchend', () => {
+        isDragging = false;
       });
       
       // Inicialización
       window.addEventListener('load', () => {
-        adjustScale();
+        setupFoodPresentation();
         
-        // Ocultar prompt después de 5 segundos
+        // Ocultar controles después de 5 segundos (aparecen al tocar)
+        document.querySelector('.scale-controls').style.opacity = '0';
+      });
+      
+      // Mostrar controles al tocar
+      window.addEventListener('click', () => {
+        const controls = document.querySelector('.scale-controls');
+        controls.style.opacity = '1';
         setTimeout(() => {
-          promptElement.style.display = 'none';
-        }, 5000);
+          controls.style.opacity = '0';
+        }, 3000);
       });
     </script>
   </body>

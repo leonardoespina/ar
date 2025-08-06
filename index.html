@@ -1,55 +1,17 @@
 <html>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- A-Frame y MindAR -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <style>
+      body { margin: 0; overflow: hidden; touch-action: none; }
+    </style>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-gesture-detector@3.3.0/dist/aframe-gesture-detector.min.js"></script>
-
-    <!-- Componente personalizado de interacción -->
-    <script>
-      AFRAME.registerComponent("interactivo-modelo", {
-        schema: {
-          rotationSpeed: { default: 1 },
-          scaleSpeed: { default: 1 },
-          minScale: { default: 0.3 },
-          maxScale: { default: 3 },
-        },
-        init: function () {
-          this.initialScale = this.el.object3D.scale.clone();
-          this.currentScale = this.el.object3D.scale.x;
-          this.el.sceneEl.addEventListener("onefingermove", (evt) => {
-            const deltaX = evt.detail.positionChange.x;
-            this.el.object3D.rotation.y -= deltaX * 0.01 * this.data.rotationSpeed;
-          });
-
-          this.el.sceneEl.addEventListener("twofingermove", (evt) => {
-            const scaleChange = evt.detail.spreadChange * 0.005 * this.data.scaleSpeed;
-            this.currentScale = THREE.MathUtils.clamp(
-              this.currentScale + scaleChange,
-              this.data.minScale,
-              this.data.maxScale
-            );
-            this.el.object3D.scale.set(
-              this.currentScale,
-              this.currentScale,
-              this.currentScale
-            );
-          });
-        },
-      });
-    </script>
+    <script src="https://unpkg.com/aframe-gestures-component@3.0.1/dist/aframe-gestures-component.min.js"></script>
   </head>
-
   <body>
     <a-scene
       mindar-image="imageTargetSrc: targets/targets.mind;"
-      color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights"
       vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: false"
-      gesture-detector
-      embedded
     >
       <a-assets>
         <a-asset-item id="avatarModel" src="models/1.glb"></a-asset-item>
@@ -58,18 +20,21 @@
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0">
-        <a-entity
-          id="model-container"
+        <a-gltf-model
+          id="interactiveModel"
+          rotation="0 0 0"
           position="0 -1 0"
-          interactivo-modelo
-        >
-          <a-gltf-model src="#avatarModel"></a-gltf-model>
-        </a-entity>
+          scale="1 1 1"
+          src="#avatarModel"
+          gesture-handler="minScale: 0.5; maxScale: 2;"
+          pinchable="sensitivity: 0.7"
+          stretchable
+          rotatable="sensitivity: 0.5"
+        ></a-gltf-model>
       </a-entity>
     </a-scene>
   </body>
 </html>
-
 
 <!-- <html>
   <head>
@@ -103,5 +68,6 @@ physicallyCorrectLights"
   </body>
 </html>
 -->
+
 
 

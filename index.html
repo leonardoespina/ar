@@ -1,179 +1,164 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>AR Restaurante</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      touch-action: none;
-    }
-    #interaction-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 9999;
-    }
-  </style>
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-  <script src="https://unpkg.com/aframe-gestures-component@3.0.1/dist/aframe-gestures-component.min.js"></script>
-</head>
+</html>
+  <html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <style>
+      body { 
+        margin: 0; 
+        overflow: hidden; 
+        touch-action: none;
+      }
+      #interaction-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+      }
+    </style>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://unpkg.com/aframe-gestures-component@3.0.1/dist/aframe-gestures-component.min.js"></script>
+  </head>
+  <body>
+    <div id="interaction-overlay"></div>
+    
+    <a-scene
+      mindar-image="imageTargetSrc: targets/targets.mind;"
+      vr-mode-ui="enabled: false"
+      renderer="colorManagement: true"
+    >
+      <a-assets>
+        <a-asset-item id="avatarModel" src="models/1.glb"></a-asset-item>
+      </a-assets>
 
-<body>
-  <div id="interaction-overlay"></div>
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-  <a-scene
-    mindar-image="imageTargetSrc: targets/targets.mind; filterMinCF: 0.0001; filterBeta: 0.05; missTolerance: 5;"
-    vr-mode-ui="enabled: false"
-    renderer="colorManagement: true, physicallyCorrectLights: true"
-    device-orientation-permission-ui="enabled: false"
-    embedded
-    gesture-detector
-  >
-    <a-assets>
-      <a-asset-item id="avatarModel" src="models/1.glb"></a-asset-item>
-    </a-assets>
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-gltf-model
+          id="interactiveModel"
+            rotation="100 0 0" 
+  position="0 0 0" 
+   scale="4 4 4"
+          src="#avatarModel"
+          gesture-handler="minScale: 0.5; maxScale: 2;"
+          pinchable
+          stretchable
+          rotatable
+        ></a-gltf-model>
+      </a-entity>
+    </a-scene>
 
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
-    <a-entity mindar-image-target="targetIndex: 0">
-      <a-gltf-model
-        id="interactiveModel"
-        src="#avatarModel"
-        position="0 -0.1 0"
-        rotation="100 0 0"
-        scale="4 4 4"
-        material="transparent: true; opacity: 1"
-        gesture-handler="minScale: 0.5; maxScale: 2;"
-        pinchable
-        stretchable
-        rotatable
-      ></a-gltf-model>
-    </a-entity>
-  </a-scene>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const scene = document.querySelector('a-scene');
-      const model = document.getElementById('interactiveModel');
-      const overlay = document.getElementById('interaction-overlay');
-
-      let isTracking = false;
-      let initialScale = { x: 1, y: 1, z: 1 };
-      let initialDistance = null;
-      let initialRotation = { x: 0, y: 0, z: 0 };
-      let initialAngle = null;
-      let lastTouch = null;
-
-      scene.addEventListener('targetFound', () => {
-        isTracking = true;
-        model.setAttribute('visible', true);
-        model.setAttribute('animation__fadein', {
-          property: 'material.opacity',
-          from: 0,
-          to: 1,
-          dur: 300,
-          easing: 'easeInOutQuad'
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const scene = document.querySelector('a-scene');
+        const model = document.getElementById('interactiveModel');
+        const overlay = document.getElementById('interaction-overlay');
+        
+        // Variables para control de gestos
+        let isTracking = false;
+        let initialScale = { x: 1, y: 1, z: 1 };
+        let initialDistance = null;
+        let initialRotation = { x: 0, y: 0, z: 0 };
+        let initialAngle = null;
+        let lastTouch = null;
+        
+        // Evento cuando se detecta el target
+        scene.addEventListener('targetFound', () => {
+          isTracking = true;
         });
-      });
-
-      scene.addEventListener('targetLost', () => {
-        isTracking = false;
-        model.setAttribute('animation__fadeout', {
-          property: 'material.opacity',
-          from: 1,
-          to: 0,
-          dur: 300,
-          easing: 'easeInOutQuad'
+        
+        // Evento cuando se pierde el target
+        scene.addEventListener('targetLost', () => {
+          isTracking = false;
         });
-
-        setTimeout(() => {
-          if (!isTracking) model.setAttribute('visible', false);
-        }, 400);
-      });
-
-      overlay.addEventListener('touchstart', function (e) {
-        if (!isTracking) return;
-        e.preventDefault();
-
-        if (e.touches.length === 2) {
-          initialDistance = getDistance(e.touches[0], e.touches[1]);
-          initialScale = model.getAttribute('scale');
-          initialAngle = getAngle(e.touches[0], e.touches[1]);
-          initialRotation = model.getAttribute('rotation');
-        } else if (e.touches.length === 1) {
-          lastTouch = {
-            x: e.touches[0].clientX,
-            y: e.touches[0].clientY
-          };
+        
+        // Control de gestos táctiles
+        overlay.addEventListener('touchstart', function(e) {
+          if (!isTracking) return;
+          e.preventDefault();
+          
+          if (e.touches.length === 2) {
+            // Dos dedos: rotación y escala
+            initialDistance = getDistance(e.touches[0], e.touches[1]);
+            initialScale = model.getAttribute('scale');
+            initialAngle = getAngle(e.touches[0], e.touches[1]);
+            initialRotation = model.getAttribute('rotation');
+          } else if (e.touches.length === 1) {
+            // Un dedo: rotación
+            lastTouch = {
+              x: e.touches[0].clientX,
+              y: e.touches[0].clientY
+            };
+          }
+        });
+        
+        overlay.addEventListener('touchmove', function(e) {
+          if (!isTracking) return;
+          e.preventDefault();
+          
+          if (e.touches.length === 2) {
+            // Gestos con dos dedos
+            const currentDistance = getDistance(e.touches[0], e.touches[1]);
+            const currentAngle = getAngle(e.touches[0], e.touches[1]);
+            
+            // Escalado
+            const scaleFactor = currentDistance / initialDistance;
+            const newScale = {
+              x: Math.min(Math.max(initialScale.x * scaleFactor, 0.5), 2),
+              y: Math.min(Math.max(initialScale.y * scaleFactor, 0.5), 2),
+              z: Math.min(Math.max(initialScale.z * scaleFactor, 0.5), 2)
+            };
+            model.setAttribute('scale', newScale);
+            
+            // Rotación
+            const angleDiff = currentAngle - initialAngle;
+            const newRotation = {
+              y: initialRotation.y + angleDiff * 2,
+              x: initialRotation.x,
+              z: initialRotation.z
+            };
+            model.setAttribute('rotation', newRotation);
+          } else if (e.touches.length === 1 && lastTouch) {
+            // Rotación con un dedo
+            const deltaX = e.touches[0].clientX - lastTouch.x;
+            const currentRotation = model.getAttribute('rotation');
+            
+            model.setAttribute('rotation', {
+              y: currentRotation.y + deltaX * 0.5,
+              x: currentRotation.x,
+              z: currentRotation.z
+            });
+            
+            lastTouch = {
+              x: e.touches[0].clientX,
+              y: e.touches[0].clientY
+            };
+          }
+        });
+        
+        overlay.addEventListener('touchend', function(e) {
+          lastTouch = null;
+          initialDistance = null;
+          initialAngle = null;
+        });
+        
+        // Funciones auxiliares
+        function getDistance(touch1, touch2) {
+          const dx = touch1.clientX - touch2.clientX;
+          const dy = touch1.clientY - touch2.clientY;
+          return Math.sqrt(dx * dx + dy * dy);
+        }
+        
+        function getAngle(touch1, touch2) {
+          const dx = touch2.clientX - touch1.clientX;
+          const dy = touch2.clientY - touch1.clientY;
+          return Math.atan2(dy, dx) * 180 / Math.PI;
         }
       });
-
-      overlay.addEventListener('touchmove', function (e) {
-        if (!isTracking) return;
-        e.preventDefault();
-
-        if (e.touches.length === 2) {
-          const currentDistance = getDistance(e.touches[0], e.touches[1]);
-          const currentAngle = getAngle(e.touches[0], e.touches[1]);
-
-          const scaleFactor = currentDistance / initialDistance;
-          const newScale = {
-            x: Math.min(Math.max(initialScale.x * scaleFactor, 0.5), 2),
-            y: Math.min(Math.max(initialScale.y * scaleFactor, 0.5), 2),
-            z: Math.min(Math.max(initialScale.z * scaleFactor, 0.5), 2)
-          };
-          model.setAttribute('scale', newScale);
-
-          const angleDiff = currentAngle - initialAngle;
-          const newRotation = {
-            y: initialRotation.y + angleDiff * 2,
-            x: initialRotation.x,
-            z: initialRotation.z
-          };
-          model.setAttribute('rotation', newRotation);
-        } else if (e.touches.length === 1 && lastTouch) {
-          const deltaX = e.touches[0].clientX - lastTouch.x;
-          const currentRotation = model.getAttribute('rotation');
-
-          model.setAttribute('rotation', {
-            y: currentRotation.y + deltaX * 0.5,
-            x: currentRotation.x,
-            z: currentRotation.z
-          });
-
-          lastTouch = {
-            x: e.touches[0].clientX,
-            y: e.touches[0].clientY
-          };
-        }
-      });
-
-      overlay.addEventListener('touchend', function (e) {
-        lastTouch = null;
-        initialDistance = null;
-        initialAngle = null;
-      });
-
-      function getDistance(touch1, touch2) {
-        const dx = touch1.clientX - touch2.clientX;
-        const dy = touch1.clientY - touch2.clientY;
-        return Math.sqrt(dx * dx + dy * dy);
-      }
-
-      function getAngle(touch1, touch2) {
-        const dx = touch2.clientX - touch1.clientX;
-        const dy = touch2.clientY - touch1.clientY;
-        return Math.atan2(dy, dx) * 180 / Math.PI;
-      }
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>
 
 
@@ -653,6 +638,7 @@ physicallyCorrectLights"
 </html>
 
 -->
+
 
 
 

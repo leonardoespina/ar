@@ -1,9 +1,54 @@
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    
+    <!-- Componentes para interacción -->
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-gesture-detector@4.0.5/dist/aframe-gesture-detector.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-super-hands-component@4.0.5/dist/aframe-super-hands.min.js"></script>
+  </head>
+
+  <body>
+    <a-scene
+      mindar-image="imageTargetSrc: targets/targets.mind; filterMinCF: 0.001; filterBeta: 0.1; missTolerance: 10"
+      color-space="sRGB"
+      renderer="colorManagement: true, physicallyCorrectLights: true"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+      gesture-detector
+      embedded
+    >
+      <a-assets>
+        <a-asset-item id="avatarModel" src="models/1.glb"></a-asset-item>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-entity
+          id="modelContainer"
+          gltf-model="#avatarModel"
+          animation-mixer
+          rotation="100 0 0"
+          position="0 0 0"
+          scale="5 5 5"
+          class="clickable"
+          grab-rotate-scale
+        ></a-entity>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
+
+<!--
+<html>
+  <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <!-- Añadir el componente de gestos táctiles -->
+    
     <script src="https://unpkg.com/aframe-touch-rotation-component@1.0.1/dist/aframe-touch-rotation-component.min.js"></script>
     <script src="https://unpkg.com/aframe-pinch-zoom-component@1.0.1/dist/aframe-pinch-zoom-component.min.js"></script>
   </head>
@@ -36,7 +81,7 @@
     </a-scene>
   </body>
 </html>
-<!-- <html>
+  <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <style>
@@ -264,6 +309,7 @@ physicallyCorrectLights"
 </html>
 
 -->
+
 
 
 

@@ -1,3 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modelo 3D - Rocket Burger</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 1rem;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 900px;
+        aspect-ratio: 16 / 9;
+        position: relative;
+      }
+
+      .sketchfab-embed-wrapper {
+        width: 100%;
+        height: 100%;
+      }
+
+      .sketchfab-embed-wrapper iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          aspect-ratio: 1 / 1; /* más cuadrado para móviles */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="sketchfab-embed-wrapper">
+        <iframe
+          title="ARMY BURGERS: ROCKET Burger"
+          frameborder="0"
+          allowfullscreen
+          mozallowfullscreen="true"
+          webkitallowfullscreen="true"
+          allow="autoplay; fullscreen; xr-spatial-tracking"
+          xr-spatial-tracking
+          execution-while-out-of-viewport
+          execution-while-not-rendered
+          web-share
+          src="https://sketchfab.com/models/881cd9a06512493e8cd60975f8ac8ba1/embed"
+        ></iframe>
+      </div>
+    </div>
+  </body>
+</html>
+
+
+
  <!--
   <html>
   <head>
@@ -638,6 +711,7 @@ physicallyCorrectLights"
 </html>
 
 -->
+
 
 
 

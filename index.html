@@ -192,180 +192,44 @@ physicallyCorrectLights"
   </body>
 </html>
  -->
-<html>
+ <html>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-        touch-action: none;
-        background-color: #000;
-      }
-      .controls {
-        position: absolute;
-        bottom: 20px;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        z-index: 1000;
-      }
-      .control-btn {
-        background-color: rgba(255,255,255,0.3);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        font-size: 24px;
-        backdrop-filter: blur(5px);
-      }
-    </style>
   </head>
   <body>
     <a-scene
       mindar-image="imageTargetSrc: targets/targets.mind;"
       color-space="sRGB"
-      renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true"
+      renderer="colorManagement: true,
+physicallyCorrectLights"
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: false"
     >
       <a-assets>
-        <a-asset-item id="foodModel" src="models/1.glb"></a-asset-item>
+        <a-asset-item id="avatarModel" src="models/scene.gltf"></a-asset-item>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <!-- Entorno para mejorar la percepción de profundidad -->
-      <a-entity geometry="primitive: plane; width: 2; height: 2" 
-                material="color: #333; shader: flat"
-                position="0 -0.5 0"
-                rotation="-90 0 0"
-                shadow="receive: true"></a-entity>
-
       <a-entity mindar-image-target="targetIndex: 0">
-        <a-entity 
-          id="food-dish"
-          gltf-model="#foodModel"
-          scale="1 1 1"
-          position="0 0 0"
-          rotation="-15 0 0"
-          shadow="cast: true; receive: true"
-        >
-          <!-- Efecto de profundidad adicional -->
-          <a-entity position="0 -0.05 0" 
-                    geometry="primitive: plane; width: 0.8; height: 0.8" 
-                    material="color: #000; opacity: 0.3; shader: flat"
-                    rotation="-90 0 0"
-                    shadow="receive: true"></a-entity>
-        </a-entity>
+        <a-gltf-model
+          rotation="0 0 0 "
+          position="0 -1 0"
+          src="#avatarModel"
+        ></a-gltf-model>
       </a-entity>
-      
-      <div class="controls">
-        <button class="control-btn" id="zoom-in">+</button>
-        <button class="control-btn" id="zoom-out">-</button>
-        <button class="control-btn" id="depth-effect">∞</button>
-      </div>
-      
-      <!-- Sistema de luces mejorado -->
-      <a-entity light="type: ambient; color: #FFF; intensity: 0.5"></a-entity>
-      <a-entity light="type: directional; color: #FFF; intensity: 1.2" position="-1 2 1" shadow="castShadow: true; shadowMapWidth: 2048; shadowMapHeight: 2048"></a-entity>
-      <a-entity light="type: directional; color: #FFEEDD; intensity: 0.5" position="1 1 1"></a-entity>
-      
-      <!-- Efecto de niebla para profundidad -->
-      <a-entity environment="fog: 0.5; fogColor: #000; groundColor: #333; grid: cross"></a-entity>
     </a-scene>
-
-    <script>
-      const foodDish = document.querySelector('#food-dish');
-      const zoomInBtn = document.getElementById('zoom-in');
-      const zoomOutBtn = document.getElementById('zoom-out');
-      const depthBtn = document.getElementById('depth-effect');
-      
-      let currentScale = 1.0;
-      let depthEnabled = true;
-      
-      // Configuración inicial para profundidad
-      function setupDepthEffects() {
-        // Añadir sombras y efectos de profundidad
-        const scene = document.querySelector('a-scene');
-        scene.setAttribute('renderer', 'shadow: true');
-        
-        // Configurar rotación inicial para mejor visualización
-        foodDish.setAttribute('rotation', '-15 0 0');
-        
-        // Habilitar efectos de profundidad
-        toggleDepthEffects(true);
-      }
-      
-      // Alternar efectos de profundidad
-      function toggleDepthEffects(enabled) {
-        depthEnabled = enabled;
-        const scene = document.querySelector('a-scene');
-        
-        if (enabled) {
-          scene.setAttribute('environment', 'fog: 0.5; fogColor: #000; groundColor: #333; grid: cross');
-          scene.setAttribute('renderer', 'shadow: true');
-          depthBtn.style.backgroundColor = 'rgba(255,255,255,0.5)';
-        } else {
-          scene.setAttribute('environment', '');
-          scene.setAttribute('renderer', 'shadow: false');
-          depthBtn.style.backgroundColor = 'rgba(255,255,255,0.2)';
-        }
-      }
-      
-      // Controles de zoom
-      zoomInBtn.addEventListener('click', () => {
-        currentScale = Math.min(currentScale + 0.1, 1.5);
-        foodDish.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
-      });
-      
-      zoomOutBtn.addEventListener('click', () => {
-        currentScale = Math.max(currentScale - 0.1, 0.5);
-        foodDish.setAttribute('scale', `${currentScale} ${currentScale} ${currentScale}`);
-      });
-      
-      // Control de efectos de profundidad
-      depthBtn.addEventListener('click', () => {
-        toggleDepthEffects(!depthEnabled);
-      });
-      
-      // Interacción táctil para rotación
-      let isDragging = false;
-      let previousPosition = { x: 0 };
-      let currentRotation = 0;
-      
-      window.addEventListener('touchstart', (e) => {
-        isDragging = true;
-        previousPosition.x = e.touches[0].clientX;
-        document.querySelector('.controls').style.opacity = '1';
-      });
-      
-      window.addEventListener('touchmove', (e) => {
-        if(!isDragging) return;
-        
-        const deltaX = e.touches[0].clientX - previousPosition.x;
-        currentRotation += deltaX * 0.5;
-        foodDish.setAttribute('rotation', `-15 ${currentRotation} 0`);
-        
-        previousPosition.x = e.touches[0].clientX;
-      });
-      
-      window.addEventListener('touchend', () => {
-        isDragging = false;
-        setTimeout(() => {
-          document.querySelector('.controls').style.opacity = '0';
-        }, 3000);
-      });
-      
-      // Inicialización
-      window.addEventListener('load', () => {
-        setupDepthEffects();
-        document.querySelector('.controls').style.opacity = '0';
-      });
-    </script>
   </body>
 </html>
+
+
+
+
+
+
+
+
+
+

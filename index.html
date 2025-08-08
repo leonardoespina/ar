@@ -3,12 +3,174 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Menú 3D del Restaurante</title>
+  <title>Menú 3D Restaurante</title>
 
   <!-- Model Viewer -->
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
-  <!-- Swiper CSS -->
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, sans-serif;
+      background-color: #0f172a;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+
+    /* Contenedor principal del slider */
+    .slider-container {
+      position: relative;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding-top: 4rem; /* espacio para botones arriba */
+    }
+
+    /* Botones de navegación */
+    .slider-btn {
+      position: absolute;
+      top: 1rem;
+      background: rgba(30, 41, 59, 0.9);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+      border-radius: 8px;
+      z-index: 10;
+      transition: background 0.3s;
+    }
+    .slider-btn:hover {
+      background: rgba(51, 65, 85, 0.9);
+    }
+    .slider-btn.prev { left: 1rem; }
+    .slider-btn.next { right: 1rem; }
+
+    /* Card */
+    .card {
+      background-color: #1e293b;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      padding: 1rem;
+      text-align: center;
+      max-width: 100%;
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 500px; /* más grande */
+      background-color: #1e293b;
+      border-radius: 12px;
+      touch-action: none;
+    }
+
+    /* Texto */
+    .info {
+      margin-top: 1rem;
+    }
+    .nombre {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .precio {
+      font-size: 1.2rem;
+      color: #38bdf8;
+      margin: 0.3rem 0;
+    }
+    .ingredientes {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+    }
+
+    /* Forzar visibilidad del botón AR */
+    model-viewer::part(default-ar-button) {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      background: #38bdf8;
+      color: white;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="slider-container">
+    <!-- Botones arriba -->
+    <button class="slider-btn prev">&#9664;</button>
+    <button class="slider-btn next">&#9654;</button>
+
+    <!-- Card con GLB -->
+    <div class="card">
+      <model-viewer
+        id="viewer3d"
+        src="models/1.glb"
+        alt="Pizza Margarita"
+        camera-controls
+        ar
+        ar-modes="scene-viewer webxr quick-look"
+        shadow-intensity="1"
+        exposure="1"
+        auto-rotate
+        rotation-per-second="20deg"
+        disable-zoom="false"
+        loading="eager"
+        interaction-prompt="auto"
+        touch-action="pan-y">
+      </model-viewer>
+
+      <div class="info">
+        <div class="nombre">Pizza Margarita</div>
+        <div class="precio">$12.99</div>
+        <div class="ingredientes">Tomate, mozzarella, albahaca, aceite de oliva</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const viewer = document.getElementById('viewer3d');
+
+    // Bloquear scroll mientras interactúa
+    let interacting = false;
+
+    const disableScroll = e => {
+      interacting = true;
+      document.body.style.overflow = 'hidden';
+      if (e.cancelable) e.preventDefault();
+    };
+    const enableScroll = () => {
+      interacting = false;
+      document.body.style.overflow = '';
+    };
+
+    viewer.addEventListener('mousedown', disableScroll);
+    viewer.addEventListener('touchstart', disableScroll, { passive: false });
+    viewer.addEventListener('mouseup', enableScroll);
+    viewer.addEventListener('mouseleave', enableScroll);
+    viewer.addEventListener('touchend', enableScroll);
+
+    document.addEventListener('touchmove', e => {
+      if (interacting) e.preventDefault();
+    }, { passive: false });
+  </script>
+
+</body>
+</html>
+
+<!--<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menú 3D del Restaurante</title>
+
+ 
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+ 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
   <style>
@@ -70,11 +232,11 @@
 </head>
 <body>
 
-  <!-- Slider -->
+ 
   <div class="swiper">
     <div class="swiper-wrapper">
       
-      <!-- Tarjeta 1 -->
+     
       <div class="swiper-slide">
         <model-viewer
           src="models/leo.glb"
@@ -91,7 +253,7 @@
         </div>
       </div>
 
-      <!-- Tarjeta 2 -->
+     
       <div class="swiper-slide">
         <model-viewer
           src="models/2.glb"
@@ -108,7 +270,7 @@
         </div>
       </div>
 
-      <!-- Tarjeta 3 -->
+      
       <div class="swiper-slide">
         <model-viewer
           src="models/3.glb"
@@ -127,15 +289,15 @@
 
     </div>
 
-    <!-- Botones de navegación -->
+     
     <div class="swiper-button-next"></div>
     <div class="swiper-button-prev"></div>
 
-    <!-- Paginación -->
+   
     <div class="swiper-pagination"></div>
   </div>
 
-  <!-- Swiper JS -->
+  
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
  <script>
@@ -979,6 +1141,7 @@ physicallyCorrectLights"
 </html>
 
 -->
+
 
 
 

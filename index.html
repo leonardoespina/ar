@@ -77,7 +77,7 @@
       <!-- Tarjeta 1 -->
       <div class="swiper-slide">
         <model-viewer
-          src="models/1.glb"
+          src="models/leo.glb"
           alt="Pizza Margarita"
           camera-controls
           shadow-intensity="1"
@@ -138,26 +138,43 @@
   <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-  <script>
-    const swiper = new Swiper('.swiper', {
-      slidesPerView: 1,
-      spaceBetween: 20,
-      loop: true,
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-      pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-      },
-      breakpoints: {
-        640: { slidesPerView: 1 },
-        768: { slidesPerView: 2 },
-        1024: { slidesPerView: 3 },
-      }
+ <script>
+  const swiper = new Swiper('.swiper', {
+    slidesPerView: 1,
+    spaceBetween: 20,
+    loop: true,
+    allowTouchMove: false, // 🔹 Solo navegación con flechas
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true,
+    },
+    breakpoints: {
+      640: { slidesPerView: 1 },
+      768: { slidesPerView: 2 },
+      1024: { slidesPerView: 3 },
+    }
+  });
+
+  // 🔹 Bloquear scroll mientras se interactúa con el 3D
+  document.querySelectorAll('model-viewer').forEach(viewer => {
+    viewer.addEventListener('mousedown', () => {
+      document.body.style.overflow = 'hidden';
     });
-  </script>
+    viewer.addEventListener('mouseup', () => {
+      document.body.style.overflow = '';
+    });
+    viewer.addEventListener('touchstart', () => {
+      document.body.style.overflow = 'hidden';
+    });
+    viewer.addEventListener('touchend', () => {
+      document.body.style.overflow = '';
+    });
+  });
+</script>
 
 </body>
 </html>
@@ -962,6 +979,7 @@ physicallyCorrectLights"
 </html>
 
 -->
+
 
 
 

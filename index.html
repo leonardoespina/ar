@@ -5,25 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Visor 3D — Model Viewer</title>
 
-  <!-- Carga de la librería <model-viewer> desde CDN oficial -->
+  <!-- Carga de la librería <model-viewer> -->
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
   <style>
-    /* Reset básico y tipografía */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       height: 100%;
       width: 100%;
       font-family: system-ui, sans-serif;
-      background-color: #0f172a; /* Azul oscuro elegante */
+      background-color: #0f172a;
       color: #e2e8f0;
     }
-
-    /* Contenedor principal centrado */
     .viewer-container {
       display: flex;
       align-items: center;
@@ -32,32 +25,27 @@
       width: 100%;
       padding: 1rem;
     }
-
-    /* Model Viewer responsive */
     model-viewer {
       width: 100%;
       height: 100%;
       max-width: 1200px;
       max-height: 90vh;
-      background-color: #1e293b; /* Contraste para el modelo */
+      background-color: #1e293b;
       border-radius: 12px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      touch-action: none; /* Evita que el navegador capture gestos para scroll/zoom */
     }
-
-    /* Ajustes para pantallas pequeñas */
     @media (max-width: 768px) {
-      model-viewer {
-        max-height: 80vh;
-      }
+      model-viewer { max-height: 80vh; }
     }
   </style>
 </head>
 <body>
 
   <main class="viewer-container">
-    <!-- Componente model-viewer con atributos de interacción y AR -->
     <model-viewer
-      src="models/leo.glb"
+      id="viewer3d"
+      src="models/1.glb"
       alt="Modelo 3D"
       camera-controls
       ar
@@ -67,14 +55,36 @@
       auto-rotate
       rotation-per-second="20deg"
       disable-zoom="false"
-      touch-action="pan-y"
       loading="eager"
       interaction-prompt="auto">
     </model-viewer>
   </main>
 
+  <script>
+    const viewer = document.getElementById('viewer3d');
+
+    // Bloquear scroll mientras el usuario interactúa con el visor
+    viewer.addEventListener('mousedown', disableScroll);
+    viewer.addEventListener('touchstart', disableScroll, { passive: false });
+
+    viewer.addEventListener('mouseup', enableScroll);
+    viewer.addEventListener('mouseleave', enableScroll);
+    viewer.addEventListener('touchend', enableScroll);
+
+    function disableScroll(e) {
+      // Evita que el navegador intente desplazarse
+      document.body.style.overflow = 'hidden';
+      if (e.cancelable) e.preventDefault();
+    }
+
+    function enableScroll() {
+      document.body.style.overflow = '';
+    }
+  </script>
+
 </body>
 </html>
+
 <!--
 <!DOCTYPE html>
 <html lang="es">
@@ -789,6 +799,7 @@ physicallyCorrectLights"
 </html>
 
 -->
+
 
 
 

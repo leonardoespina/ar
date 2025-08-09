@@ -95,7 +95,8 @@
         border-top: 1px solid rgba(255, 255, 255, 0.2);
         transform: translateY(100%);
         opacity: 0;
-        transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1); /* Más lento y con easing suave */
+        transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        padding: 0.1rem 1rem; /* Más lento y con easing suave */
       }
 
       .card-info.show {
@@ -251,6 +252,7 @@
           id="viewer"
           src="models/leo.glb"
           alt="Modelo"
+          ar
           camera-controls
           shadow-intensity="1"
           camera-orbit="0deg 90deg 1.5m"

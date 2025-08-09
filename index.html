@@ -7,6 +7,7 @@
 
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 
 <style>
   body {
@@ -124,6 +125,20 @@
     border-radius: 999px;
     font-size: 0.8rem;
   }
+.titulo-caligrafico {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  text-align: center;
+font-family: 'Dancing Script', cursive;
+  font-size: 3.5rem;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  letter-spacing: 1px;
+}
+
 
   .swiper-button-next, .swiper-button-prev {
     color: white;
@@ -151,6 +166,7 @@
 
 <!-- Todo el HTML se mantiene exactamente igual -->
 <div class="card">
+ <div class="titulo-caligrafico">Mi Restaurante</div> <!-- Nueva línea -->
   <div class="model-container">
     <div class="loader" id="loader">Cargando...</div>
     <model-viewer
@@ -258,6 +274,7 @@
 
 </body>
 </html>
+
 
 
 

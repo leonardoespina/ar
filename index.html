@@ -1,3 +1,13 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Carta 3D Restaurante</title>
+
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
 <style>
   body {
     font-family: system-ui, sans-serif;
@@ -42,7 +52,7 @@
     background-color: transparent;
   }
 
-  /* Loader solo sobre el model-viewer */
+  /* Loader solo sobre el modelo */
   .loader {
     position: absolute;
     inset: 0;
@@ -89,6 +99,8 @@
   .swiper-button-next { right: 20px; }
   .swiper-button-prev { left: 20px; }
 </style>
+</head>
+<body>
 
 <div class="card">
   <div class="model-container">
@@ -110,30 +122,14 @@
   </div>
 </div>
 
-<!-- Botones -->
 <div class="swiper-button-prev"></div>
 <div class="swiper-button-next"></div>
 
 <script>
   const models = [
-    {
-      src: "models/leo.glb",
-      title: "Pizza Margarita",
-      price: "$12.50",
-      ingredients: "Tomate, mozzarella, albahaca"
-    },
-    {
-      src: "models/2.glb",
-      title: "Hamburguesa Clásica",
-      price: "$9.90",
-      ingredients: "Carne, queso, lechuga, tomate"
-    },
-    {
-      src: "models/3.glb",
-      title: "Ensalada César",
-      price: "$7.50",
-      ingredients: "Lechuga, pollo, parmesano, aderezo"
-    }
+    { src: "models/leo.glb", title: "Pizza Margarita", price: "$12.50", ingredients: "Tomate, mozzarella, albahaca" },
+    { src: "models/2.glb", title: "Hamburguesa Clásica", price: "$9.90", ingredients: "Carne, queso, lechuga, tomate" },
+    { src: "models/3.glb", title: "Ensalada César", price: "$7.50", ingredients: "Lechuga, pollo, parmesano, aderezo" }
   ];
 
   let currentIndex = 0;
@@ -144,17 +140,20 @@
   const ingredientsEl = document.getElementById("ingredients");
 
   function loadModel(index) {
-    loader.style.display = "flex"; // Solo sobre model-viewer
     const model = models[index];
-    viewer.src = model.src;
+    loader.style.display = "flex"; // Mostrar loader sobre el modelo
     titleEl.textContent = model.title;
     priceEl.textContent = model.price;
     ingredientsEl.textContent = model.ingredients;
+
+    // Escuchar evento antes de cambiar src
+    viewer.addEventListener("load", onModelLoad, { once: true });
+    viewer.src = model.src;
   }
 
-  viewer.addEventListener("load", () => {
+  function onModelLoad() {
     loader.style.display = "none";
-  });
+  }
 
   document.querySelector(".swiper-button-next").addEventListener("click", () => {
     currentIndex = (currentIndex + 1) % models.length;
@@ -167,6 +166,8 @@
   });
 </script>
 
+</body>
+</html>
 
 
 <!--<!DOCTYPE html>
@@ -1150,6 +1151,7 @@ physicallyCorrectLights"
 </html>
 
 -->
+
 
 
 

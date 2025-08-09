@@ -1,230 +1,181 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Menú Digital</title>
-  
-  <!-- Swiper CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Carta 3D Restaurante</title>
 
-  <style>
-    body {
-      margin: 0;
-      background: linear-gradient(135deg, #ffecd2, #fcb69f);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+<!-- Model Viewer -->
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
-    header {
-      width: 100%;
-      text-align: center;
-      padding: 20px 0 10px;
-    }
+<!-- Swiper CSS (solo para usar flechas) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
-    header h1 {
-      font-size: 2rem;
-      margin: 0;
-      color: #6b2c1c;
-      font-weight: bold;
-    }
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    margin: 0;
+    background: #0f172a;
+    color: #e2e8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
 
-    .filter-bar {
-      display: flex;
-      gap: 10px;
-      padding: 10px 15px;
-      width: 100%;
-      box-sizing: border-box;
-      align-items: center;
-    }
+  .card {
+    background: url("3.jpg") no-repeat center center;
+    background-size: cover;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    width: 350px;
+    height: 500px;
+    overflow: hidden;
+    position: relative;
+  }
 
-    .filter-bar input {
-      flex: 1;
-      padding: 8px 12px;
-      border-radius: 20px;
-      border: none;
-      outline: none;
-      font-size: 1rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 0;
+  }
 
-    .categories {
-      display: flex;
-      gap: 10px;
-      padding: 10px 15px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
+  model-viewer {
+    width: 100%;
+    height: 60%;
+    background-color: transparent;
+    z-index: 1;
+    position: relative;
+  }
 
-    .categories::-webkit-scrollbar {
-      display: none;
-    }
+  .card-info {
+    padding: 1rem;
+    position: relative;
+    z-index: 1;
+  }
 
-    .category-btn {
-      background: white;
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: 1px solid #ddd;
-      cursor: pointer;
-      white-space: nowrap;
-      font-size: 0.9rem;
-      transition: background 0.3s;
-    }
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
 
-    .category-btn:hover, .category-btn.active {
-      background: #fcb69f;
-      color: white;
-      border-color: #fcb69f;
-    }
+  .card-price {
+    color: #22c55e;
+    font-weight: bold;
+  }
 
-    .swiper {
-      width: 90%;
-      max-width: 400px;
-      margin-top: 15px;
-    }
+  .card-ingredients {
+    font-size: 0.9rem;
+    color: #f1f5f9;
+  }
 
-    .card {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-      overflow: hidden;
-      padding: 10px;
-      text-align: center;
-      position: relative;
-    }
+  /* Loader */
+  .loader {
+    position: absolute;
+    inset: 0;
+    background: rgba(15,23,42,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: none;
+  }
 
-    model-viewer {
-      width: 100%;
-      height: 300px;
-      background: #f0f0f0;
-    }
-
-    .loader {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255,255,255,0.8);
-      font-size: 1rem;
-      font-weight: bold;
-      z-index: 10;
-    }
-
-    .swiper-button-next, .swiper-button-prev {
-      color: #6b2c1c;
-    }
-
-    .card h3 {
-      margin: 10px 0 5px;
-      color: #333;
-    }
-  </style>
+  /* Flechas */
+  .swiper-button-next, .swiper-button-prev {
+    color: white;
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+  }
+  .swiper-button-next { right: 20px; }
+  .swiper-button-prev { left: 20px; }
+</style>
 </head>
 <body>
 
-<header>
-  <h1>🍽 Restaurante Bella Vita</h1>
-</header>
-
-<div class="filter-bar">
-  <input type="text" placeholder="Buscar plato...">
-</div>
-
-<div class="categories">
-  <div class="category-btn active">Todos</div>
-  <div class="category-btn">Entradas</div>
-  <div class="category-btn">Platos Fuertes</div>
-  <div class="category-btn">Postres</div>
-  <div class="category-btn">Bebidas</div>
-</div>
-
-<div class="swiper">
-  <div class="swiper-wrapper">
-
-    <!-- Slide 1 -->
-    <div class="swiper-slide">
-      <div class="card">
-        <div class="model-container" style="position: relative;">
-          <div class="loader" id="loader1">Cargando modelo...</div>
-          <model-viewer 
-            src="models/1.glb"
-            camera-controls 
-            auto-rotate 
-            ar
-            exposure="1"
-            shadow-intensity="1"
-            onload="document.getElementById('loader1').style.display='none'">
-          </model-viewer>
-        </div>
-        <h3>Pizza Margarita</h3>
-      </div>
-    </div>
-
-    <!-- Slide 2 -->
-    <div class="swiper-slide">
-      <div class="card">
-        <div class="model-container" style="position: relative;">
-          <div class="loader" id="loader2">Cargando modelo...</div>
-          <model-viewer 
-            src="models/leo.glb"
-            camera-controls 
-            auto-rotate 
-            ar
-            exposure="1"
-            shadow-intensity="1"
-            onload="document.getElementById('loader2').style.display='none'">
-          </model-viewer>
-        </div>
-        <h3>Ensalada César</h3>
-      </div>
-    </div>
-
+<!-- Tarjeta única -->
+<div class="card">
+  <div class="loader" id="loader">Cargando...</div>
+  <model-viewer
+    id="viewer"
+    src="models/leo.glb"
+    alt="Modelo"
+    camera-controls
+    shadow-intensity="1"
+    auto-rotate
+    touch-action="pan-y">
+  </model-viewer>
+  <div class="card-info">
+    <div class="card-title" id="title">Pizza Margarita</div>
+    <div class="card-price" id="price">$12.50</div>
+    <div class="card-ingredients" id="ingredients">Tomate, mozzarella, albahaca</div>
   </div>
-
-  <!-- Botones navegación -->
-  <div class="swiper-button-next"></div>
-  <div class="swiper-button-prev"></div>
-
-  <!-- Paginación -->
-  <div class="swiper-pagination"></div>
 </div>
 
-<!-- Swiper JS -->
-<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<!-- Botones -->
+<div class="swiper-button-prev"></div>
+<div class="swiper-button-next"></div>
+
+<!-- Swiper JS (solo para flechas) -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <script>
-  const swiper = new Swiper('.swiper', {
-    slidesPerView: 1,
-    spaceBetween: 20,
-    loop: true,
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
+  const models = [
+    {
+      src: "models/leo.glb",
+      title: "Pizza Margarita",
+      price: "$12.50",
+      ingredients: "Tomate, mozzarella, albahaca"
     },
-    pagination: {
-      el: '.swiper-pagination',
-      clickable: true,
+    {
+      src: "models/2.glb",
+      title: "Hamburguesa Clásica",
+      price: "$9.90",
+      ingredients: "Carne, queso, lechuga, tomate"
+    },
+    {
+      src: "models/3.glb",
+      title: "Ensalada César",
+      price: "$7.50",
+      ingredients: "Lechuga, pollo, parmesano, aderezo"
     }
+  ];
+
+  let currentIndex = 0;
+  const viewer = document.getElementById("viewer");
+  const loader = document.getElementById("loader");
+  const titleEl = document.getElementById("title");
+  const priceEl = document.getElementById("price");
+  const ingredientsEl = document.getElementById("ingredients");
+
+  function loadModel(index) {
+    loader.style.display = "flex"; // Mostrar loader
+    const model = models[index];
+    viewer.src = model.src;
+    titleEl.textContent = model.title;
+    priceEl.textContent = model.price;
+    ingredientsEl.textContent = model.ingredients;
+  }
+
+  viewer.addEventListener("load", () => {
+    loader.style.display = "none"; // Ocultar loader cuando termine
   });
 
-  // Evitar cambio de slide mientras el usuario gira el modelo
-  document.querySelectorAll('model-viewer').forEach(viewer => {
-    viewer.addEventListener('mousedown', () => swiper.allowTouchMove = false);
-    viewer.addEventListener('mouseup', () => swiper.allowTouchMove = true);
-    viewer.addEventListener('touchstart', () => swiper.allowTouchMove = false);
-    viewer.addEventListener('touchend', () => swiper.allowTouchMove = true);
+  document.querySelector(".swiper-button-next").addEventListener("click", () => {
+    currentIndex = (currentIndex + 1) % models.length;
+    loadModel(currentIndex);
   });
 
-  // Activar categoría seleccionada
-  document.querySelectorAll('.category-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    });
+  document.querySelector(".swiper-button-prev").addEventListener("click", () => {
+    currentIndex = (currentIndex - 1 + models.length) % models.length;
+    loadModel(currentIndex);
   });
 </script>
 
@@ -1214,6 +1165,7 @@ physicallyCorrectLights"
 </html>
 
 -->
+
 
 
 

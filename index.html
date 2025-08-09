@@ -18,8 +18,8 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    touch-action: none; /* Evita el desplazamiento en dispositivos táctiles */
-    overflow: hidden; /* Previene el scroll */
+    touch-action: none;
+    overflow: hidden;
   }
 
   .card {
@@ -46,15 +46,16 @@
     height: 60%;
     position: relative;
     z-index: 1;
+    touch-action: none;
   }
 
   model-viewer {
     width: 100%;
     height: 100%;
     background-color: transparent;
+    touch-action: none;
   }
 
-  /* Loader solo sobre el modelo */
   .loader {
     position: absolute;
     inset: 0;
@@ -69,34 +70,67 @@
     display: none;
   }
 
+  /* Nuevo estilo para el área de texto con efecto vidrio */
   .card-info {
     padding: 1rem;
-    position: relative;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
     z-index: 1;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0 0 12px 12px;
   }
 
   .card-title {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     font-weight: bold;
+    margin-bottom: 0.25rem;
+    color: white;
   }
 
   .card-price {
     color: #22c55e;
     font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
   }
 
   .card-ingredients {
     font-size: 0.9rem;
-    color: #f1f5f9;
+    color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
   }
 
-  /* Flechas */
+  .ingredient-tag {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+  }
+
   .swiper-button-next, .swiper-button-prev {
     color: white;
     position: fixed;
     top: 50%;
     transform: translateY(-50%);
     z-index: 20;
+    touch-action: auto;
   }
   .swiper-button-next { right: 20px; }
   .swiper-button-prev { left: 20px; }
@@ -114,15 +148,22 @@
       camera-controls
       shadow-intensity="1"
       auto-rotate
-      touch-action="none" <!-- Deshabilita gestos táctiles para el modelo -->
-     
-  
+      interaction-policy="allow-when-focused"
+      touch-action="none">
     </model-viewer>
   </div>
   <div class="card-info">
-    <div class="card-title" id="title">Pizza Margarita</div>
-    <div class="card-price" id="price">$12.50</div>
-    <div class="card-ingredients" id="ingredients">Tomate, mozzarella, albahaca</div>
+    <div class="card-title" id="title">Cappuccino</div>
+    <div class="card-price" id="price">$4.50</div>
+    <div class="card-rating">
+      <span>★ 4.5</span>
+      <span>(6,986)</span>
+    </div>
+    <div class="card-ingredients">
+      <span class="ingredient-tag">Coffee</span>
+      <span class="ingredient-tag">Milk</span>
+      <span class="ingredient-tag">Micilum Roasted</span>
+    </div>
   </div>
 </div>
 
@@ -131,9 +172,27 @@
 
 <script>
   const models = [
-    { src: "models/leo.glb", title: "Pizza Margarita", price: "$12.50", ingredients: "Tomate, mozzarella, albahaca" },
-    { src: "models/2.glb", title: "Hamburguesa Clásica", price: "$9.90", ingredients: "Carne, queso, lechuga, tomate" },
-    { src: "models/3.glb", title: "Ensalada César", price: "$7.50", ingredients: "Lechuga, pollo, parmesano, aderezo" }
+    { 
+      src: "models/leo.glb", 
+      title: "Cappuccino", 
+      price: "$4.50", 
+      rating: "4.5 (6,986)",
+      ingredients: ["Coffee", "Milk", "Micilum Roasted"]
+    },
+    { 
+      src: "models/2.glb", 
+      title: "Hamburguesa Clásica", 
+      price: "$9.90", 
+      rating: "4.8 (3,452)",
+      ingredients: ["Carne", "Queso", "Lechuga", "Tomate"]
+    },
+    { 
+      src: "models/3.glb", 
+      title: "Ensalada César", 
+      price: "$7.50", 
+      rating: "4.3 (2,156)", 
+      ingredients: ["Lechuga", "Pollo", "Parmesano", "Aderezo"]
+    }
   ];
 
   let currentIndex = 0;
@@ -141,49 +200,52 @@
   const loader = document.getElementById("loader");
   const titleEl = document.getElementById("title");
   const priceEl = document.getElementById("price");
-  const ingredientsEl = document.getElementById("ingredients");
+  const ingredientsEl = document.querySelector(".card-ingredients");
+  const ratingEl = document.querySelector(".card-rating");
 
-  // Prevenir eventos táctiles en el documento
   document.addEventListener('touchmove', function(e) {
-    if (!e.target.classList.contains('swiper-button-next') && 
-        !e.target.classList.contains('swiper-button-prev')) {
+    const isNavigationButton = e.target.closest('.swiper-button-next') || 
+                              e.target.closest('.swiper-button-prev');
+    if (!isNavigationButton) {
       e.preventDefault();
     }
   }, { passive: false });
 
   function loadModel(index) {
     const model = models[index];
-    loader.style.display = "flex"; // Mostrar loader sobre el modelo
+    loader.style.display = "flex";
     titleEl.textContent = model.title;
     priceEl.textContent = model.price;
-    ingredientsEl.textContent = model.ingredients;
+    ratingEl.innerHTML = `★ ${model.rating}`;
+    
+    // Actualizar ingredientes
+    ingredientsEl.innerHTML = model.ingredients
+      .map(ing => `<span class="ingredient-tag">${ing}</span>`)
+      .join('');
 
-    // Escuchar evento antes de cambiar src
-    viewer.addEventListener("load", onModelLoad, { once: true });
+    viewer.addEventListener("load", () => {
+      loader.style.display = "none";
+      viewer.autoRotate = true;
+    }, { once: true });
+    
     viewer.src = model.src;
   }
 
-  function onModelLoad() {
-    loader.style.display = "none";
-  }
-
   document.querySelector(".swiper-button-next").addEventListener("click", (e) => {
-    e.stopPropagation();
     currentIndex = (currentIndex + 1) % models.length;
     loadModel(currentIndex);
   });
 
   document.querySelector(".swiper-button-prev").addEventListener("click", (e) => {
-    e.stopPropagation();
     currentIndex = (currentIndex - 1 + models.length) % models.length;
     loadModel(currentIndex);
   });
 
-  // Cargar el modelo inicial
   loadModel(currentIndex);
 </script>
 
 </body>
 </html>
+
 
 

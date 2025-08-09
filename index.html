@@ -1,16 +1,3 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Carta 3D Restaurante</title>
-
-<!-- Model Viewer -->
-<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-
-<!-- Swiper CSS (solo para usar flechas) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
-
 <style>
   body {
     font-family: system-ui, sans-serif;
@@ -42,12 +29,32 @@
     z-index: 0;
   }
 
-  model-viewer {
+  .model-container {
     width: 100%;
     height: 60%;
-    background-color: transparent;
-    z-index: 1;
     position: relative;
+    z-index: 1;
+  }
+
+  model-viewer {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+  }
+
+  /* Loader solo sobre el model-viewer */
+  .loader {
+    position: absolute;
+    inset: 0;
+    background: rgba(15,23,42,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    z-index: 2;
+    display: none;
   }
 
   .card-info {
@@ -71,21 +78,6 @@
     color: #f1f5f9;
   }
 
-  /* Loader */
-  .loader {
-    position: absolute;
-    inset: 0;
-    background: rgba(15,23,42,0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-    color: white;
-    font-size: 1.2rem;
-    font-weight: bold;
-    display: none;
-  }
-
   /* Flechas */
   .swiper-button-next, .swiper-button-prev {
     color: white;
@@ -97,21 +89,20 @@
   .swiper-button-next { right: 20px; }
   .swiper-button-prev { left: 20px; }
 </style>
-</head>
-<body>
 
-<!-- Tarjeta única -->
 <div class="card">
-  <div class="loader" id="loader">Cargando...</div>
-  <model-viewer
-    id="viewer"
-    src="models/leo.glb"
-    alt="Modelo"
-    camera-controls
-    shadow-intensity="1"
-    auto-rotate
-    touch-action="pan-y">
-  </model-viewer>
+  <div class="model-container">
+    <div class="loader" id="loader">Cargando...</div>
+    <model-viewer
+      id="viewer"
+      src="models/leo.glb"
+      alt="Modelo"
+      camera-controls
+      shadow-intensity="1"
+      auto-rotate
+      touch-action="pan-y">
+    </model-viewer>
+  </div>
   <div class="card-info">
     <div class="card-title" id="title">Pizza Margarita</div>
     <div class="card-price" id="price">$12.50</div>
@@ -122,9 +113,6 @@
 <!-- Botones -->
 <div class="swiper-button-prev"></div>
 <div class="swiper-button-next"></div>
-
-<!-- Swiper JS (solo para flechas) -->
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <script>
   const models = [
@@ -156,7 +144,7 @@
   const ingredientsEl = document.getElementById("ingredients");
 
   function loadModel(index) {
-    loader.style.display = "flex"; // Mostrar loader
+    loader.style.display = "flex"; // Solo sobre model-viewer
     const model = models[index];
     viewer.src = model.src;
     titleEl.textContent = model.title;
@@ -165,7 +153,7 @@
   }
 
   viewer.addEventListener("load", () => {
-    loader.style.display = "none"; // Ocultar loader cuando termine
+    loader.style.display = "none";
   });
 
   document.querySelector(".swiper-button-next").addEventListener("click", () => {
@@ -178,9 +166,6 @@
     loadModel(currentIndex);
   });
 </script>
-
-</body>
-</html>
 
 
 
@@ -1165,6 +1150,7 @@ physicallyCorrectLights"
 </html>
 
 -->
+
 
 
 

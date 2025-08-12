@@ -1,0 +1,396 @@
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  background: #0f172a;
+  color: #e2e8f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* Clases de utilidad para gestión de la vista */
+.hidden {
+  display: none !important;
+}
+
+.visible {
+  display: block;
+}
+
+/* ===== PANTALLA DE BIENVENIDA ===== */
+#welcome-screen {
+  text-align: center;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 1s ease-in-out;
+  background: url("assets/3.jpg") no-repeat center center;
+  background-size: cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#welcome-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 2;
+}
+
+.welcome-content .titulo {
+  font-family: "Dancing Script", cursive;
+  font-size: 3.5rem;
+  color: white;
+  text-shadow: 0.5px 0.5px 0 white, -0.5px -0.5px 0 white;
+  margin-bottom: 10px;
+}
+
+.welcome-content .subtitulo {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.imagen-circular {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.imagen-circular img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mensaje {
+  margin: 15px 0;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.btn {
+  display: inline-block;
+  background: #22c55e;
+  color: white;
+  padding: 0.7rem 1.5rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}
+
+.registro {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.registro a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== CARTA 3D (MENU) ===== */
+#menu-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  background: url("assets/3.jpg") no-repeat center center;
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.model-container {
+  width: 100%;
+  height: 60%;
+  position: relative;
+  top: 25%;
+  background-color: transparent;
+}
+
+model-viewer {
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  touch-action: none;
+}
+
+.loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  display: none;
+}
+
+.card-info {
+  padding: 1rem;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  transform: translateY(0);
+  opacity: 1;
+  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  color: white;
+}
+
+.card-price {
+  color: #22c55e;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+}
+
+.card-ingredients {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.ingredient-tag {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.header-container {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.titulo-caligrafico {
+  font-family: "Dancing Script", cursive;
+  font-size: 3.5rem;
+  color: white;
+  text-shadow: 0.5px 0.5px 0 white, -0.5px -0.5px 0 white;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+  margin-top: -20px;
+}
+
+.menu-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.food-icon {
+  font-size: 2.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: float 3s ease-in-out infinite;
+  margin-bottom: 5px;
+}
+
+.menu-text {
+  font-size: 1.2rem;
+  color: white;
+  text-shadow: 0.5px 0.5px 0 white, -0.5px -0.5px 0 white;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: white;
+  position: absolute; /* Cambiado de fixed a absolute */
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.5);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  margin: 0; /* Asegura que no haya márgenes externos */
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.swiper-button-next {
+  right: 5px; /* Reducido significativamente */
+}
+
+.swiper-button-prev {
+  left: 5px; /* Reducido significativamente */
+}
+
+/* Media queries para dispositivos de escritorio */
+@media (min-width: 768px) {
+  .swiper-button-next {
+    right: 10px; /* Más cerca en desktop */
+  }
+
+  .swiper-button-prev {
+    left: 10px; /* Más cerca en desktop */
+  }
+
+  /* Añadimos un contenedor relativo para las flechas */
+  .model-container {
+    position: relative;
+  }
+
+  /* Posicionamos las flechas relativas al contenedor del modelo */
+  #menu-screen .swiper-button-next,
+  #menu-screen .swiper-button-prev {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+/* Para pantallas muy grandes (más de 1200px) */
+@media (min-width: 1200px) {
+  .swiper-button-next {
+    right: 15px; /* Un poco más separado solo en pantallas muy grandes */
+  }
+
+  .swiper-button-prev {
+    left: 15px; /* Un poco más separado solo en pantallas muy grandes */
+  }
+}
+
+/* Media queries para dispositivos de escritorio */
+@media (min-width: 768px) {
+  body {
+    overflow: auto;
+    height: 100vh;
+  }
+  #welcome-screen {
+    width: 450px;
+    height: 700px;
+    position: relative;
+    border-radius: 12px;
+    margin: 2rem;
+  }
+  #menu-screen {
+    position: relative;
+    width: 450px;
+    height: 700px;
+    margin: 2rem;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  #menu-screen .card {
+    width: 100%;
+    height: 100%;
+  }
+  .swiper-button-next {
+    right: 15px;
+  }
+  .swiper-button-prev {
+    left: 15px;
+  }
+}
+
+/* Para pantallas muy grandes (más de 1200px) */
+@media (min-width: 1200px) {
+  .swiper-button-next {
+    right: 20px;
+  }
+  .swiper-button-prev {
+    left: 20px;
+  }
+}

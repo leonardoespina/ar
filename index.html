@@ -18,418 +18,69 @@
       rel="stylesheet"
     />
 
-    <style>
-      body {
-        font-family: system-ui, sans-serif;
-        margin: 0;
-        background: #0f172a;
-        color: #e2e8f0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        touch-action: none;
-        overflow: hidden;
-      }
-
-      .card {
-        background: url("3.jpg") no-repeat center center;
-        background-size: cover;
-        width: 100%;
-        height: 100%;
-        position: fixed;
-        top: 0;
-        left: 0;
-        border-radius: 0;
-      }
-
-      .card::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.4);
-        z-index: 0;
-      }
-
-      .model-container {
-        width: 100%;
-        height: 60%;
-        position: relative;
-        z-index: 1;
-        touch-action: none;
-        top: 25%;
-        background-color: transparent;
-      }
-
-      model-viewer {
-        width: 100%;
-        height: 100%;
-        background-color: transparent;
-        touch-action: none;
-      }
-
-      .loader {
-        position: absolute;
-        inset: 0;
-        background: transparent;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.2rem;
-        font-weight: bold;
-        z-index: 2;
-        display: none;
-      }
-
-      .card-info {
-        padding: 1rem;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 1;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-top: 1px solid rgba(255, 255, 255, 0.2);
-        transform: translateY(100%);
-        opacity: 0;
-        transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-        padding: 0.1rem 1rem; /* Más lento y con easing suave */
-      }
-
-      .card-info.show {
-        transform: translateY(0);
-        opacity: 1;
-      }
-
-      .card-info.show {
-        transform: translateY(0);
-        opacity: 1;
-      }
-
-      @keyframes slideUp {
-        from {
-          transform: translateY(100%);
-          opacity: 0;
-        }
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
-      }
-
-      .card-title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin-bottom: 0.25rem;
-        color: white;
-      }
-
-      .card-price {
-        color: #22c55e;
-        font-weight: bold;
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
-      }
-
-      .card-rating {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 0.9rem;
-      }
-
-      .card-ingredients {
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.8);
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 0.5rem;
-      }
-
-      .ingredient-tag {
-        background: rgba(255, 255, 255, 0.15);
-        padding: 0.25rem 0.5rem;
-        border-radius: 999px;
-        font-size: 0.8rem;
-      }
-
-      .header-container {
-        position: absolute;
-        top: 10px;
-        left: 0;
-        right: 0;
-        text-align: center;
-        z-index: 10;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .titulo-caligrafico {
-        font-family: "Dancing Script", cursive;
-        font-size: 3.5rem;
-        color: white;
-        text-shadow: 0.5px 0.5px 0 white, -0.5px -0.5px 0 white;
-        margin-bottom: 10px;
-        letter-spacing: 1px;
-        margin-top: -20px;
-      }
-
-      .menu-header {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 10px;
-      }
-
-      .food-icon {
-        font-size: 2.5rem;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        animation: float 3s ease-in-out infinite;
-        margin-bottom: 5px;
-      }
-
-      .menu-text {
-        font-size: 1.2rem;
-        color: white;
-        text-shadow: 0.5px 0.5px 0 white, -0.5px -0.5px 0 white;
-      }
-
-      @keyframes float {
-        0%,
-        100% {
-          transform: translateY(0);
-        }
-        50% {
-          transform: translateY(-5px);
-        }
-      }
-
-      .swiper-button-next,
-      .swiper-button-prev {
-        color: white;
-        position: fixed;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 20;
-        touch-action: auto;
-      }
-      .swiper-button-next {
-        right: 20px;
-      }
-      .swiper-button-prev {
-        left: 20px;
-      }
-
-      @media (min-width: 768px) {
-        .card {
-          width: 450px;
-          height: 700px;
-          position: relative;
-          border-radius: 12px;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="card">
-      <div class="header-container">
-        <div class="menu-header">
-          <div class="food-icon">🍽️</div>
+    <div id="app-container">
+      <div id="welcome-screen">
+        <div class="welcome-content">
+          <div class="titulo">Tu Restaurante</div>
+          <div class="subtitulo">Bienvenidos</div>
+          <div class="imagen-circular">
+            <img src="assets/3.jpg" alt="Plato principal" />
+          </div>
+          <div class="mensaje">Gracias por tu visita</div>
+          <a href="#" class="btn" id="enterBtn">Entrar</a>
+          <div class="registro">
+            ¿No tienes cuenta? <a href="#">Regístrate ahora</a>
+          </div>
         </div>
-        <div class="titulo-caligrafico">Mi Restaurante</div>
       </div>
 
-      <div class="model-container">
-        <div class="loader" id="loader">Cargando...</div>
-        <model-viewer
-          id="viewer"
-          src="models/leo.glb"
-          alt="Modelo"
-          ar
-          camera-controls
-          shadow-intensity="1"
-          camera-orbit="0deg 90deg 1.5m"
-          interaction-policy="allow-when-focused"
-          touch-action="none"
-        >
-        </model-viewer>
-      </div>
+      <div id="menu-screen" class="hidden">
+        <div class="card">
+          <div class="header-container">
+            <div class="menu-header">
+              <div class="food-icon">🍽️</div>
+            </div>
+            <div class="titulo-caligrafico">Menu 3d</div>
+          </div>
 
-      <div class="card-info">
-        <div class="card-title" id="title">Cappuccino</div>
-        <div class="card-price" id="price">$4.50</div>
-        <div class="card-rating">
-          <span>★ 4.5</span>
-          <span>(6,986)</span>
+          <div class="model-container">
+            <div class="loader" id="loader">Cargando...</div>
+            <model-viewer
+              id="viewer"
+              src="models/leo.glb"
+              alt="Modelo"
+              ar
+              camera-controls
+              shadow-intensity="1"
+              camera-orbit="0deg 90deg 1.5m"
+              interaction-policy="allow-when-focused"
+              touch-action="none"
+            >
+            </model-viewer>
+          </div>
+
+          <div class="card-info">
+            <div class="card-title" id="title">Cappuccino</div>
+            <div class="card-price" id="price">$4.50</div>
+            <div class="card-rating">
+              <span>★ 4.5</span>
+              <span>(6,986)</span>
+            </div>
+            <div class="card-ingredients">
+              <span class="ingredient-tag">Coffee</span>
+              <span class="ingredient-tag">Milk</span>
+              <span class="ingredient-tag">Micilum Roasted</span>
+            </div>
+          </div>
         </div>
-        <div class="card-ingredients">
-          <span class="ingredient-tag">Coffee</span>
-          <span class="ingredient-tag">Milk</span>
-          <span class="ingredient-tag">Micilum Roasted</span>
-        </div>
+
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
       </div>
     </div>
-
-    <div class="swiper-button-prev"></div>
-    <div class="swiper-button-next"></div>
-
-    <script>
-      function loadModel(index) {
-        const model = models[index];
-        loader.style.display = "flex";
-
-        // Ocultar card-info
-        const cardInfo = document.querySelector(".card-info");
-        cardInfo.classList.remove("show");
-
-        // Pequeño retraso para permitir que la animación de salida se complete
-        setTimeout(() => {
-          titleEl.textContent = model.title;
-          priceEl.textContent = model.price;
-          ratingEl.innerHTML = `★ ${model.rating}`;
-
-          ingredientsEl.innerHTML = model.ingredients
-            .map((ing) => `<span class="ingredient-tag">${ing}</span>`)
-            .join("");
-
-          // Mostrar con animación
-          setTimeout(() => {
-            cardInfo.classList.add("show");
-          }, 50);
-
-          viewer.addEventListener(
-            "load",
-            () => {
-              loader.style.display = "none";
-              viewer.autoRotate = true;
-            },
-            { once: true }
-          );
-
-          viewer.src = model.src;
-        }, 300); // Tiempo de la animación de salida
-      }
-
-      // Event listeners anteriores se mantienen igual
-
-      // Mostrar el primer elemento al cargar
-      window.addEventListener("DOMContentLoaded", () => {
-        setTimeout(() => {
-          document.querySelector(".card-info").classList.add("show");
-        }, 500);
-      });
-
-      const models = [
-        {
-          src: "models/leo.glb",
-          title: "Cappuccino",
-          price: "$4.50",
-          rating: "4.5 (6,986)",
-          ingredients: ["Coffee", "Milk", "Micilum Roasted"],
-        },
-        {
-          src: "models/2.glb",
-          title: "Hamburguesa Clásica",
-          price: "$9.90",
-          rating: "4.8 (3,452)",
-          ingredients: ["Carne", "Queso", "Lechuga", "Tomate"],
-        },
-        {
-          src: "models/3.glb",
-          title: "Ensalada César",
-          price: "$7.50",
-          rating: "4.3 (2,156)",
-          ingredients: ["Lechuga", "Pollo", "Parmesano", "Aderezo"],
-        },
-      ];
-
-      let currentIndex = 0;
-      const viewer = document.getElementById("viewer");
-      const loader = document.getElementById("loader");
-      const titleEl = document.getElementById("title");
-      const priceEl = document.getElementById("price");
-      const ingredientsEl = document.querySelector(".card-ingredients");
-      const ratingEl = document.querySelector(".card-rating");
-
-      document.addEventListener(
-        "touchmove",
-        function (e) {
-          const isNavigationButton =
-            e.target.closest(".swiper-button-next") ||
-            e.target.closest(".swiper-button-prev");
-          if (!isNavigationButton) {
-            e.preventDefault();
-          }
-        },
-        { passive: false }
-      );
-      function loadModel(index) {
-        const model = models[index];
-        loader.style.display = "flex";
-
-        // Ocultar card-info
-        const cardInfo = document.querySelector(".card-info");
-        cardInfo.classList.remove("show");
-
-        // Esperar a que complete la animación de salida (800ms)
-        setTimeout(() => {
-          titleEl.textContent = model.title;
-          priceEl.textContent = model.price;
-          ratingEl.innerHTML = `★ ${model.rating}`;
-
-          ingredientsEl.innerHTML = model.ingredients
-            .map((ing) => `<span class="ingredient-tag">${ing}</span>`)
-            .join("");
-
-          // Pequeña pausa antes de mostrar (100ms)
-          setTimeout(() => {
-            cardInfo.classList.add("show");
-          }, 100);
-
-          viewer.addEventListener(
-            "load",
-            () => {
-              loader.style.display = "none";
-              viewer.autoRotate = true;
-            },
-            { once: true }
-          );
-
-          viewer.src = model.src;
-        }, 800); // Coincide con la duración de la transición
-      }
-
-      // ... (event listeners permanecen igual) ...
-
-      // Mostrar el primer elemento al cargar
-      window.addEventListener("DOMContentLoaded", () => {
-        setTimeout(() => {
-          document.querySelector(".card-info").classList.add("show");
-        }, 1000); // Mayor delay inicial
-      });
-
-      document
-        .querySelector(".swiper-button-next")
-        .addEventListener("click", (e) => {
-          currentIndex = (currentIndex + 1) % models.length;
-          loadModel(currentIndex);
-        });
-
-      document
-        .querySelector(".swiper-button-prev")
-        .addEventListener("click", (e) => {
-          currentIndex = (currentIndex - 1 + models.length) % models.length;
-          loadModel(currentIndex);
-        });
-
-      loadModel(currentIndex);
-    </script>
+    <script src="app.js"></script>
   </body>
 </html>
